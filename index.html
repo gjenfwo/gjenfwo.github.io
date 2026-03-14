@@ -6,825 +6,15 @@
   <meta name="description" content="허유정 — Data Observability & DevOps Engineer 포트폴리오">
   <title>허유정 | Data Observability & DevOps Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style-dashboard.css?v=2">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    :root {
-      /* Grafana-authentic palette */
-      --bg:         #111217;
-      --surface:    #181b1f;
-      --card:       #1e2028;
-      --border:     #2a2f38;
-      --border-h:   #3a404b;
-      --text:       #d8d9da;
-      --text-sec:   #a7adb7;
-      --muted:      #7e8694;
-      --dim:        #5e6673;
-      --orange:     #ff6600;
-      --orange-dim: rgba(255,102,0,0.12);
-      --blue:       #5794f2;
-      --blue-dim:   rgba(87,148,242,0.12);
-      --green:      #73bf69;
-      --green-dim:  rgba(115,191,105,0.12);
-      --yellow:     #f2cc0c;
-      --yellow-dim: rgba(242,204,12,0.12);
-      --purple:     #b877d9;
-      --purple-dim: rgba(184,119,217,0.12);
-      --red:        #f2495c;
-      --red-dim:    rgba(242,73,92,0.12);
-      --radius:     6px;
-      --mono:       'JetBrains Mono', 'Consolas', monospace;
-      --sans:       'Inter', -apple-system, sans-serif;
-    }
-
-    body[data-theme="light"] {
-      --bg: #f5f7fb;
-      --surface: #ffffff;
-      --card: #f8fafc;
-      --border: #d8dee9;
-      --border-h: #c4cedd;
-      --text: #1b2430;
-      --text-sec: #4a5668;
-      --muted: #6b778b;
-      --dim: #8a95a6;
-      --orange-dim: rgba(255, 102, 0, 0.08);
-      --blue-dim: rgba(87, 148, 242, 0.12);
-      --green-dim: rgba(115, 191, 105, 0.12);
-      --yellow-dim: rgba(242, 204, 12, 0.14);
-      --purple-dim: rgba(184, 119, 217, 0.12);
-      --red-dim: rgba(242, 73, 92, 0.12);
-    }
-
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      display: flex;
-      min-height: 100vh;
-    }
-
-    a { color: var(--blue); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    /* ═══════════════════════════════════════
-       SIDEBAR — Grafana-style left rail
-       ═══════════════════════════════════════ */
-    .sidebar {
-      width: 56px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 12px 0;
-      gap: 4px;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 200;
-      transition: width 0.2s;
-    }
-
-    .sidebar-logo {
-      width: 32px; height: 32px;
-      margin-bottom: 16px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--orange);
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 0.85rem;
-      background: var(--orange-dim);
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-
-    .sidebar-item {
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: var(--radius);
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.15s;
-      position: relative;
-      text-decoration: none;
-    }
-
-    .sidebar-item:hover {
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      text-decoration: none;
-    }
-
-    .sidebar-item.active {
-      color: var(--text);
-      background: rgba(255,255,255,0.08);
-    }
-
-    .sidebar-item.active::before {
-      content: '';
-      position: absolute;
-      left: -8px;
-      width: 3px; height: 20px;
-      background: var(--orange);
-      border-radius: 0 2px 2px 0;
-    }
-
-    .sidebar-item svg { width: 20px; height: 20px; }
-
-    .sidebar-tooltip {
-      display: none;
-      position: absolute;
-      left: 52px;
-      background: #2a2f38;
-      color: var(--text);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      white-space: nowrap;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .sidebar-item:hover .sidebar-tooltip { display: block; }
-
-    .sidebar-divider {
-      width: 24px;
-      height: 1px;
-      background: var(--border);
-      margin: 8px 0;
-    }
-
-    /* ═══════════════════════════════════════
-       TOP BAR — Grafana breadcrumb/controls
-       ═══════════════════════════════════════ */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      height: 48px;
-      display: flex; align-items: center;
-      padding: 0 1.25rem;
-      justify-content: space-between;
-    }
-
-    .breadcrumb {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.8rem;
-    }
-
-    .breadcrumb-sep { color: var(--dim); }
-    .breadcrumb a { color: var(--muted); }
-    .breadcrumb a:hover { color: var(--text); text-decoration: none; }
-    .breadcrumb .current { color: var(--text); font-weight: 500; }
-
-    .topbar-controls {
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .control-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 4px 10px;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-family: var(--mono);
-      min-width: 48px;
-      height: 28px;
-    }
-
-    .control-btn:hover { border-color: var(--border-h); color: var(--text); }
-
-    .time-range {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      font-family: var(--mono);
-      color: var(--text-sec);
-    }
-
-    .time-range .icon { color: var(--muted); }
-
-    .refresh-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 4px 8px;
-      color: var(--muted);
-      cursor: pointer;
-      display: flex; align-items: center;
-      font-size: 0.8rem;
-    }
-
-    .refresh-btn:hover { border-color: var(--border-h); color: var(--text); }
-
-    /* ═══════════════════════════════════════
-       MAIN CONTENT
-       ═══════════════════════════════════════ */
-    .content-wrapper {
-      flex: 1;
-      margin-left: 56px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .main {
-      flex: 1;
-      padding: 16px;
-      width: 100%;
-    }
-
-    /* ═══════════════════════════════════════
-       GRAFANA PANELS
-       ═══════════════════════════════════════ */
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: border-color 0.15s;
-    }
-
-    .panel:hover { border-color: var(--border-h); }
-
-    .panel-header {
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      min-height: 38px;
-    }
-
-    .panel-title {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text);
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .panel-title-icon {
-      width: 16px; height: 16px;
-      color: var(--muted);
-    }
-
-    .panel-actions {
-      display: flex; align-items: center; gap: 4px;
-    }
-
-    .panel-action-btn {
-      width: 24px; height: 24px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 3px;
-      color: var(--dim);
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-
-    .panel-action-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-
-    .panel-body { padding: 16px; }
-
-    /* ═══════════════════════════════════════
-       GRID LAYOUTS
-       ═══════════════════════════════════════ */
-    .grid-row { margin-bottom: 8px; }
-
-    .row-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .row-title .chevron { color: var(--muted); font-size: 0.7rem; }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .grid-2-1 {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 8px;
-    }
-
-    .grid-1-1 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    /* ═══════════════════════════════════════
-       HERO — "Overview" panel
-       ═══════════════════════════════════════ */
-    .hero-panel {
-      position: relative;
-    }
-
-    .hero-panel .panel-body {
-      padding: 24px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .hero-panel h1 {
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      font-weight: 700;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-      margin-bottom: 8px;
-    }
-
-    .hero-panel h1 .orange { color: var(--orange); }
-    .hero-panel h1 .blue { color: var(--blue); }
-
-    .hero-panel .subtitle {
-      color: var(--text-sec);
-      font-size: 0.88rem;
-      max-width: 480px;
-      line-height: 1.6;
-    }
-
-    .status-list {
-      display: flex; flex-direction: column; gap: 6px;
-      align-items: flex-end;
-    }
-
-    .status-tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-family: var(--mono);
-      color: var(--text-sec);
-    }
-
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .dot-green { background: var(--green); box-shadow: 0 0 6px rgba(115,191,105,0.5); }
-    .dot-blue { background: var(--blue); }
-    .dot-orange { background: var(--orange); }
-
-    /* ═══════════════════════════════════════
-       STAT PANELS (metric cards)
-       ═══════════════════════════════════════ */
-    .stat-panel .panel-body {
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      font-family: var(--mono);
-      line-height: 1;
-    }
-
-    .stat-value.green { color: var(--green); }
-    .stat-value.blue { color: var(--blue); }
-    .stat-value.orange { color: var(--orange); }
-    .stat-value.purple { color: var(--purple); }
-
-    .stat-sub {
-      font-size: 0.72rem;
-      color: var(--dim);
-      margin-top: 6px;
-      font-family: var(--mono);
-    }
-
-    /* Sparkline bar */
-    .sparkline {
-      height: 4px;
-      border-radius: 2px;
-      margin-top: 10px;
-      background: var(--card);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .sparkline-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.6s ease-out;
-    }
-
-    .sparkline-fill.green { background: var(--green); }
-    .sparkline-fill.blue { background: var(--blue); }
-    .sparkline-fill.orange { background: var(--orange); }
-    .sparkline-fill.purple { background: var(--purple); }
-
-    /* ═══════════════════════════════════════
-       TABLE PANEL (Career)
-       ═══════════════════════════════════════ */
-    .table-panel table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-    }
-
-    .table-panel th {
-      text-align: left;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-    }
-
-    .table-panel td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(42,47,56,0.5);
-      vertical-align: top;
-    }
-
-    .table-panel tr:hover td {
-      background: rgba(255,255,255,0.02);
-    }
-
-    .table-panel tr:last-child td { border-bottom: none; }
-
-    .td-period {
-      font-family: var(--mono);
-      color: var(--yellow);
-      font-size: 0.78rem;
-      white-space: nowrap;
-    }
-
-    .td-role {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .td-team {
-      color: var(--text-sec);
-      font-size: 0.78rem;
-    }
-
-    .td-desc {
-      color: var(--text-sec);
-      font-size: 0.8rem;
-      line-height: 1.5;
-    }
-
-    .td-status {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 3px;
-    }
-
-    .td-status.running { background: var(--green-dim); color: var(--green); }
-    .td-status.completed { background: var(--blue-dim); color: var(--blue); }
-
-    /* ═══════════════════════════════════════
-       GAUGE / STACK PANEL
-       ═══════════════════════════════════════ */
-    .gauge-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .gauge-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .gauge-label {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--text-sec);
-      min-width: 100px;
-    }
-
-    .gauge-bar {
-      flex: 1;
-      height: 6px;
-      background: var(--card);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .gauge-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.6s ease-out;
-    }
-
-    .gauge-fill.green { background: var(--green); }
-    .gauge-fill.blue { background: var(--blue); }
-    .gauge-fill.orange { background: var(--orange); }
-    .gauge-fill.yellow { background: var(--yellow); }
-    .gauge-fill.purple { background: var(--purple); }
-
-    /* Stack tags */
-    .stack-category {
-      margin-bottom: 12px;
-    }
-
-    .stack-category:last-child { margin-bottom: 0; }
-
-    .stack-cat-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 6px;
-    }
-
-    .stack-tags {
-      display: flex; flex-wrap: wrap; gap: 4px;
-    }
-
-    .stack-tag {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 3px;
-      border: 1px solid;
-    }
-
-    .stack-tag.green { background: var(--green-dim); border-color: rgba(115,191,105,0.25); color: var(--green); }
-    .stack-tag.blue { background: var(--blue-dim); border-color: rgba(87,148,242,0.25); color: var(--blue); }
-    .stack-tag.orange { background: var(--orange-dim); border-color: rgba(255,102,0,0.25); color: var(--orange); }
-    .stack-tag.yellow { background: var(--yellow-dim); border-color: rgba(242,204,12,0.25); color: var(--yellow); }
-    .stack-tag.purple { background: var(--purple-dim); border-color: rgba(184,119,217,0.25); color: var(--purple); }
-
-    /* ═══════════════════════════════════════
-       LOG / ALERT PANEL (Blog)
-       ═══════════════════════════════════════ */
-    .log-entry {
-      padding: 10px 16px;
-      border-bottom: 1px solid rgba(42,47,56,0.5);
-      transition: background 0.1s;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .log-entry:last-child { border-bottom: none; }
-    .log-entry:hover { background: rgba(255,255,255,0.02); }
-
-    .log-level {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 3px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .log-level.info { background: var(--blue-dim); color: var(--blue); }
-    .log-level.warn { background: var(--orange-dim); color: var(--orange); }
-    .log-level.debug { background: var(--green-dim); color: var(--green); }
-
-    .log-content { flex: 1; }
-
-    .log-msg {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-
-    .log-detail {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .log-time {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--dim);
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* ═══════════════════════════════════════
-       PROJECT CARD
-       ═══════════════════════════════════════ */
-    .project-body {
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
-    }
-
-    .project-body h3 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .project-body p {
-      font-size: 0.82rem;
-      color: var(--text-sec);
-      margin-bottom: 8px;
-    }
-
-    .project-link {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--green);
-      display: inline-flex; align-items: center; gap: 4px;
-    }
-
-    .project-link:hover { color: #8ed888; }
-
-    /* ═══════════════════════════════════════
-       ABOUT / CREDENTIAL CARDS
-       ═══════════════════════════════════════ */
-    .info-item {
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(42,47,56,0.5);
-    }
-
-    .info-item:last-child { border-bottom: none; }
-
-    .info-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .info-value {
-      font-size: 0.85rem;
-      color: var(--text-sec);
-    }
-
-    .info-value a { color: var(--blue); }
-
-    /* ═══════════════════════════════════════
-       FOOTER
-       ═══════════════════════════════════════ */
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 12px 16px;
-      text-align: center;
-      font-size: 0.72rem;
-      color: var(--dim);
-      font-family: var(--mono);
-    }
-
-    /* ═══════════════════════════════════════
-       MOBILE RESPONSIVE
-       ═══════════════════════════════════════ */
-    .mobile-header { display: none; }
-
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-
-      .content-wrapper { margin-left: 0; }
-
-    .mobile-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 48px;
-        padding: 0 12px;
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
-        position: sticky; top: 0; z-index: 200;
-      }
-
-      .mobile-header-controls {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .mobile-header .control-btn {
-        min-width: 40px;
-        padding: 4px 8px;
-        height: 30px;
-      }
-
-      .mobile-logo {
-        display: flex; align-items: center; gap: 8px;
-        font-weight: 700; font-size: 0.85rem; color: var(--text);
-      }
-
-      .mobile-logo-dot {
-        width: 8px; height: 8px; border-radius: 50%;
-        background: var(--orange);
-      }
-
-      .mobile-menu-btn {
-        background: none; border: none;
-        color: var(--muted); cursor: pointer;
-        padding: 6px; border-radius: var(--radius);
-      }
-
-      .mobile-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-      .mobile-menu-btn svg { width: 22px; height: 22px; }
-
-      .mobile-nav {
-        display: none;
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
-        padding: 8px;
-      }
-
-      .mobile-nav.open { display: block; }
-
-      .mobile-nav a {
-        display: block;
-        padding: 10px 12px;
-        color: var(--text-sec);
-        font-size: 0.85rem;
-        border-radius: var(--radius);
-        text-decoration: none;
-      }
-
-      .mobile-nav a:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-
-      .topbar { display: none; }
-
-      .main { padding: 12px; }
-
-      .grid-4 { grid-template-columns: repeat(2, 1fr); }
-      .grid-2-1 { grid-template-columns: 1fr; }
-      .grid-1-1 { grid-template-columns: 1fr; }
-      .grid-3 { grid-template-columns: 1fr; }
-
-      .hero-panel .panel-body { padding: 16px; }
-      .status-list { align-items: flex-start; }
-
-      /* Career table horizontal scroll on mobile */
-      .table-panel .panel-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .table-panel table { min-width: 600px; }
-
-      /* Smaller stat values on mobile */
-      .stat-value { font-size: 1.6rem; }
-    }
-
-    /* ═══════════════════════════════════════
-       ANIMATIONS
-       ═══════════════════════════════════════ */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
 </head>
 <body>
-
   <!-- ═══ SIDEBAR ═══ -->
   <nav class="sidebar" aria-label="Main navigation">
     <div class="sidebar-logo">YJ</div>
-
     <a href="#overview" class="sidebar-item active">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
       <span class="sidebar-tooltip" id="nav-overview">Overview</span>
@@ -837,9 +27,7 @@
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
       <span class="sidebar-tooltip" id="nav-tech">Tech Stack</span>
     </a>
-
     <div class="sidebar-divider"></div>
-
     <a href="#projects" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
       <span class="sidebar-tooltip" id="nav-projects">Projects</span>
@@ -856,7 +44,6 @@
 
   <!-- ═══ CONTENT ═══ -->
   <div class="content-wrapper">
-
     <!-- ═══ MOBILE HEADER ═══ -->
     <div class="mobile-header">
       <div class="mobile-logo">
@@ -900,32 +87,37 @@
     </div>
 
     <main class="main">
-
-      <!-- ═══ ROW: Overview ═══ -->
+      <!-- ═══ ROW: Overview + Stack ═══ -->
       <div class="grid-row fade-in" id="overview">
-        <div class="panel hero-panel">
-          <div class="panel-header">
-            <span class="panel-title">
-              <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span id="panel-engineer-overview">Engineer Overview</span>
-            </span>
-            <div class="panel-actions">
-              <span class="panel-action-btn" title="View">&#8942;</span>
+        <div class="grid-2-1">
+          <div class="panel hero-panel">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span id="panel-engineer-overview">Engineer Overview</span>
+              </span>
+              <div class="panel-actions">
+                <span class="panel-action-btn" title="View">&#8942;</span>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="hero-main">
+                <h1 id="hero-title"></h1>
+                <p class="subtitle" id="hero-subtitle"></p>
+                <div id="overview-contact-links" class="overview-contact-links"></div>
+              </div>
+              <div class="status-list" id="status-list"></div>
             </div>
           </div>
-          <div class="panel-body">
-            <div>
-              <h1 id="hero-title">
-                <span class="orange">Data Observability</span> &amp;<br>
-                <span class="blue">DevOps</span> Engineer
-              </h1>
-              <p class="subtitle" id="hero-subtitle">Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
+
+          <div class="panel" id="stack">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <span id="panel-tech-stack">Tech Stack</span>
+              </span>
             </div>
-            <div class="status-list" id="status-list">
-              <span class="status-tag"><span class="dot dot-green"></span> ACTIVE — Samsung Electronics</span>
-              <span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>
-              <span class="status-tag"><span class="dot dot-orange"></span> Since 2018</span>
-            </div>
+            <div class="panel-body" id="stack-body"></div>
           </div>
         </div>
       </div>
@@ -933,47 +125,12 @@
       <!-- ═══ ROW: Stats ═══ -->
       <div class="grid-row fade-in">
         <div class="row-title" id="row-metrics"><span class="chevron">&#9660;</span> Key Metrics</div>
-        <div class="grid-4" id="stats-grid">
-          <div class="panel stat-panel">
-            <div class="panel-header"><span class="panel-title">Experience</span></div>
-            <div class="panel-body">
-              <span class="stat-label">Years at Samsung</span>
-              <span class="stat-value green">7+</span>
-              <div class="sparkline"><div class="sparkline-fill green" style="width:85%"></div></div>
-            </div>
-          </div>
-          <div class="panel stat-panel">
-            <div class="panel-header"><span class="panel-title">K8s Certifications</span></div>
-            <div class="panel-body">
-              <span class="stat-label">Kubestronaut</span>
-              <span class="stat-value blue">5</span>
-              <span class="stat-sub">CKA CKAD CKS KCNA KCSA</span>
-              <div class="sparkline"><div class="sparkline-fill blue" style="width:100%"></div></div>
-            </div>
-          </div>
-          <div class="panel stat-panel">
-            <div class="panel-header"><span class="panel-title">ETL Scale</span></div>
-            <div class="panel-body">
-              <span class="stat-label">Tables Monitored</span>
-              <span class="stat-value orange">45K</span>
-              <div class="sparkline"><div class="sparkline-fill orange" style="width:92%"></div></div>
-            </div>
-          </div>
-          <div class="panel stat-panel">
-            <div class="panel-header"><span class="panel-title">Infra Scope</span></div>
-            <div class="panel-body">
-              <span class="stat-label">Prometheus Targets</span>
-              <span class="stat-value purple">6.2K</span>
-              <span class="stat-sub">servers + apps</span>
-              <div class="sparkline"><div class="sparkline-fill purple" style="width:78%"></div></div>
-            </div>
-          </div>
-        </div>
+        <div class="grid-4" id="stats-grid"></div>
       </div>
 
-      <!-- ═══ ROW: Career + Stack ═══ -->
+      <!-- ═══ ROW: Career ═══ -->
       <div class="grid-row fade-in" id="career">
-        <div class="row-title" id="row-career-stack"><span class="chevron">&#9660;</span> Career &amp; Stack</div>
+        <div class="row-title" id="row-career-stack"><span class="chevron">&#9660;</span> Career</div>
         <div class="grid-2-1">
 
           <!-- Career Table -->
@@ -984,192 +141,118 @@
                 <span id="panel-career-timeline">Career Timeline</span>
               </span>
             </div>
-            <div class="panel-body" style="padding:0;">
+            <div class="panel-body panel-body-tight">
               <table>
                 <thead>
                   <tr>
-                    <th style="width:15%">Period</th>
-                    <th style="width:12%">Status</th>
-                    <th style="width:28%">Role</th>
+                    <th class="col-career-period">Period</th>
+                    <th class="col-career-status">Status</th>
+                    <th class="col-career-role">Role</th>
                     <th>Details</th>
                   </tr>
                 </thead>
-                <tbody id="career-body">
-                  <tr>
-                    <td class="td-period">2025.08–now</td>
-                    <td><span class="td-status running"><span class="dot dot-green"></span> running</span></td>
-                    <td>
-                      <div class="td-role">DataOps Engineer</div>
-                      <div class="td-team">Data Observability Platform</div>
-                    </td>
-                    <td class="td-desc">
-                      45,000개 테이블 ETL 파이프라인 가시화 아키텍처 설계<br>
-                      Kafka → Data Prepper → OpenSearch 실시간 알림<br>
-                      CDC 파이프라인 안정화 및 운영 자동화
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="td-period">2023.07–25.07</td>
-                    <td><span class="td-status completed"><span class="dot dot-blue"></span> done</span></td>
-                    <td>
-                      <div class="td-role">DevOps Platform Lead</div>
-                      <div class="td-team">Observability</div>
-                    </td>
-                    <td class="td-desc">
-                      On-prem K8s PaaS, Metric/Trace/Log 통합 모니터링<br>
-                      Prometheus 25대 (6,200서버, 5,800앱) 샤딩 설계<br>
-                      EFK 로그 파이프라인 및 ILM 자동화
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="td-period">2021.03–23.06</td>
-                    <td><span class="td-status completed"><span class="dot dot-blue"></span> done</span></td>
-                    <td>
-                      <div class="td-role">Backend Engineer</div>
-                      <div class="td-team">Semiconductor Quality</div>
-                    </td>
-                    <td class="td-desc">
-                      300GB/일 수율 배치 서버 및 Report 백엔드<br>
-                      Django/Python/Oracle 지표 분석 대시보드 리드
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="career-body"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- Stack Panel -->
-          <div class="panel" id="stack">
+          <!-- Career Detail Panel -->
+          <div class="panel" id="career-detail-panel">
             <div class="panel-header">
               <span class="panel-title">
-                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span id="panel-tech-stack">Tech Stack</span>
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Career Detail</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span id="career-detail-title">Career Detail</span>
               </span>
             </div>
-            <div class="panel-body" id="stack-body">
-              <div class="stack-category">
-                <div class="stack-cat-label">Platform</div>
-                <div class="stack-tags">
-                  <span class="stack-tag green">Kubernetes</span>
-                  <span class="stack-tag green">Helm</span>
-                  <span class="stack-tag green">OpenTelemetry</span>
-                </div>
-              </div>
-              <div class="stack-category">
-                <div class="stack-cat-label">Observability</div>
-                <div class="stack-tags">
-                  <span class="stack-tag blue">Prometheus</span>
-                  <span class="stack-tag blue">Grafana</span>
-                  <span class="stack-tag blue">OpenSearch</span>
-                  <span class="stack-tag blue">Elasticsearch</span>
-                </div>
-              </div>
-              <div class="stack-category">
-                <div class="stack-cat-label">Streaming</div>
-                <div class="stack-tags">
-                  <span class="stack-tag orange">Kafka</span>
-                </div>
-              </div>
-              <div class="stack-category">
-                <div class="stack-cat-label">Backend</div>
-                <div class="stack-tags">
-                  <span class="stack-tag yellow">Python</span>
-                  <span class="stack-tag yellow">Django</span>
-                  <span class="stack-tag yellow">Oracle</span>
-                </div>
-              </div>
-              <div class="stack-category">
-                <div class="stack-cat-label">Certifications</div>
-                <div class="stack-tags">
-                  <span class="stack-tag purple">CKA</span>
-                  <span class="stack-tag purple">CKAD</span>
-                  <span class="stack-tag purple">CKS</span>
-                  <span class="stack-tag purple">KCNA</span>
-                  <span class="stack-tag purple">KCSA</span>
-                  <span class="stack-tag purple">SQLD</span>
-                </div>
-              </div>
+            <div class="panel-body career-expand" id="career-expand">
+              <ul class="career-expand-list" id="career-expand-list"></ul>
             </div>
           </div>
-
         </div>
       </div>
 
-      <!-- ═══ ROW: Projects + Blog ═══ -->
+      <!-- ═══ ROW: Projects ═══ -->
       <div class="grid-row fade-in" id="projects">
-        <div class="row-title" id="row-projects-logs"><span class="chevron">&#9660;</span> Projects &amp; Logs</div>
-        <div class="grid-1-1">
+        <div class="row-title" id="row-projects-logs"><span class="chevron">&#9660;</span> Projects</div>
+        <div class="grid-2-1">
 
-          <!-- Projects -->
-          <div class="panel">
+          <!-- Projects Table -->
+          <div class="panel table-panel">
             <div class="panel-header">
               <span class="panel-title">
                 <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                 <span id="panel-projects">Projects</span>
               </span>
             </div>
-            <div class="panel-body">
-              <div class="project-body" id="project-body">
-                <div>
-                  <h3>Cloud-Native Ticketing Platform (30,000 RPS)</h3>
-                  <p>GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증</p>
-                  <a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" class="project-link">
-                    github.com/traffic-tacos
-                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                  </a>
-                </div>
-              </div>
-
-              <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:12px;">
-                <div class="stack-cat-label" id="publishing-label">Publishing Plan</div>
-                <ul id="publishing-list" style="padding-left:1rem;margin-top:6px;font-size:0.82rem;color:var(--text-sec);">
-                  <li style="margin-bottom:4px;">운영 장애 대응 사례 문서화</li>
-                  <li style="margin-bottom:4px;">모니터링 아키텍처 비교 분석 정기 발행</li>
-                  <li>Prometheus/OTel 운영 팁 아카이브 구축</li>
-                </ul>
-              </div>
+            <div class="panel-body panel-body-tight">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="col-project-period">Period</th>
+                    <th class="col-project-status">Status</th>
+                    <th class="col-project-title">Project</th>
+                    <th>Summary</th>
+                  </tr>
+                </thead>
+                <tbody id="project-table-body"></tbody>
+              </table>
             </div>
           </div>
 
-          <!-- Blog — Logs panel -->
-          <div class="panel" id="blog">
+          <!-- Project Detail Panel -->
+          <div class="panel" id="project-detail-panel">
             <div class="panel-header">
               <span class="panel-title">
-                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Blog</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                <span id="panel-blog-logs">Blog - Log Stream</span>
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Project Detail</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                <span id="project-detail-title">Project Detail</span>
               </span>
-              <div class="panel-actions">
-                <span class="panel-action-btn" title="Filter">&#9776;</span>
-              </div>
             </div>
-            <div id="blog-log-list" style="padding:0;">
-              <div class="log-entry">
-                <span class="log-level info">INFO</span>
-                <div class="log-content">
-                  <div class="log-msg">Data Observability Architecture for Large-Scale ETL</div>
-                  <div class="log-detail">ETL 장애 탐지 시간을 줄이기 위한 실행 상태 판별 로직과 OpenSearch Trace 시각화</div>
-                </div>
-                <span class="log-time">latest</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-level debug">DEBUG</span>
-                <div class="log-content">
-                  <div class="log-msg">Prometheus Sharding Strategy in On-Prem Clusters</div>
-                  <div class="log-detail">기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 경험</div>
-                </div>
-                <span class="log-time">2025</span>
-              </div>
-              <div class="log-entry">
-                <span class="log-level warn">PERF</span>
-                <div class="log-content">
-                  <div class="log-msg">What I Learned from 30K RPS Ticketing Load Tests</div>
-                  <div class="log-detail">k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증</div>
-                </div>
-                <span class="log-time">2024</span>
+            <div class="panel-body">
+              <div class="project-body project-list" id="project-body"></div>
+              <div class="publishing-block">
+                <div class="stack-cat-label" id="publishing-label">Publishing Plan</div>
+                <ul id="publishing-list" class="publishing-list"></ul>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
+      <!-- ═══ ROW: Presentations ═══ -->
+      <div class="grid-row fade-in" id="presentations">
+        <div class="row-title" id="row-presentations"><span class="chevron">&#9660;</span> Presentations</div>
+        <div class="grid-2-1">
+          <div class="panel table-panel">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Presentations</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+                <span id="panel-presentations">Presentations</span>
+              </span>
+            </div>
+            <div class="panel-body panel-body-tight">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="col-project-period">Period</th>
+                    <th class="col-project-status">Status</th>
+                    <th class="col-project-title">Title</th>
+                    <th>Summary</th>
+                  </tr>
+                </thead>
+                <tbody id="presentation-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" id="presentation-detail-panel">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Presentation Detail</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+                <span id="presentation-detail-title">Presentation Detail</span>
+              </span>
+            </div>
+            <div class="panel-body" id="presentation-body"></div>
+          </div>
         </div>
       </div>
 
@@ -1178,56 +261,36 @@
         <div class="row-title" id="row-about"><span class="chevron">&#9660;</span> About</div>
         <div class="grid-3">
           <div class="panel">
-            <div class="panel-header"><span class="panel-title" id="panel-contact">Contact</span></div>
-            <div class="panel-body">
-              <div class="info-item">
-                <div class="info-label">Email</div>
-                <div class="info-value"><a href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">GitHub</div>
-                <div class="info-value"><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></div>
-              </div>
-            </div>
+            <div class="panel-header"><span class="panel-title" id="panel-education">Education</span></div>
+            <div class="panel-body"></div>
           </div>
           <div class="panel">
-            <div class="panel-header"><span class="panel-title" id="panel-education">Education</span></div>
-            <div class="panel-body">
-              <div class="info-item">
-                <div class="info-label">University</div>
-                <div class="info-value">성균관대학교</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">Major</div>
-                <div class="info-value">화학공학 / 컴퓨터공학 (복수전공)</div>
-              </div>
-            </div>
+            <div class="panel-header"><span class="panel-title" id="panel-certificate">Certificate</span></div>
+            <div class="panel-body"></div>
           </div>
           <div class="panel">
             <div class="panel-header"><span class="panel-title" id="panel-language">Language</span></div>
-            <div class="panel-body">
-              <div class="info-item">
-                <div class="info-label">Korean</div>
-                <div class="info-value">Native</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">English</div>
-                <div class="info-value">Professional · OPIC AL</div>
-              </div>
-            </div>
+            <div class="panel-body"></div>
           </div>
         </div>
       </div>
 
+      <!-- ═══ ROW: Blog (Bottom) ═══ -->
+      <div class="grid-row fade-in" id="blog">
+        <div class="row-title"><span class="chevron">&#9660;</span> <span id="panel-blog-logs">Blog - Log Stream</span></div>
+        <div class="panel">
+          <div class="panel-body panel-body-tight" id="blog-log-list"></div>
+        </div>
+      </div>
     </main>
-
     <footer class="footer" id="main-footer">
       &copy; 2025 허유정 · yoojung.dashboard · Built for GitHub Pages
     </footer>
-
   </div>
 
-  <script src="./portfolio-data.js?v=2"></script>
+  <div id="copy-toast" class="copy-toast" role="status" aria-live="polite"></div>
+
+  <script src="./portfolio-data.js?v=8"></script>
   <script>
     (function() {
       var data = window.PORTFOLIO_DATA || {};
@@ -1241,9 +304,32 @@
         return value || '';
       }
 
+      var fallbackUi = {
+        ko: {
+          dashboards: '대시보드', portfolio: '포트폴리오', overviewSuffix: '개요', timeRange: '2018 - 현재', topLangButton: 'EN', topThemeDark: 'Dark', topThemeLight: 'Light',
+          navOverview: 'Overview', navCareer: 'Career', navTech: 'Tech Stack', navProjects: 'Projects', navBlog: 'Blog', navAbout: 'About',
+          rowMetrics: 'Key Metrics', rowCareerStack: 'Career & Stack', rowProjectsLogs: 'Projects & Logs', rowAbout: 'About',
+          panelEngineerOverview: 'Engineer Overview', panelCareerTimeline: 'Career Timeline', panelTechStack: 'Tech Stack', panelProjects: 'Projects', panelBlogLogs: 'Blog - Log Stream', panelPresentations: 'Presentations',
+          panelEducation: 'Education', panelCertificate: 'Certificate', panelLanguage: 'Language',
+          tablePeriod: 'Period', tableStatus: 'Status', tableRole: 'Role', tableDetails: 'Details',
+          stackPlatform: 'Platform', stackObservability: 'Observability', stackStreaming: 'Streaming', stackBackend: 'Backend', stackCerts: 'Certifications',
+          publishingPlan: 'Publishing Plan', aboutEmail: 'Email', aboutGithub: 'GitHub', aboutUniversity: 'Bachelor', aboutMajor: 'Major', aboutKorean: 'Korean', aboutEnglish: 'English'
+        },
+        en: {
+          dashboards: 'Dashboards', portfolio: 'Portfolio', overviewSuffix: 'Overview', timeRange: '2018 - Present', topLangButton: 'KO', topThemeDark: 'Dark', topThemeLight: 'Light',
+          navOverview: 'Overview', navCareer: 'Career', navTech: 'Tech Stack', navProjects: 'Projects', navBlog: 'Blog', navAbout: 'About',
+          rowMetrics: 'Key Metrics', rowCareerStack: 'Career & Stack', rowProjectsLogs: 'Projects & Logs', rowAbout: 'About',
+          panelEngineerOverview: 'Engineer Overview', panelCareerTimeline: 'Career Timeline', panelTechStack: 'Tech Stack', panelProjects: 'Projects', panelBlogLogs: 'Blog - Log Stream', panelPresentations: 'Presentations',
+          panelEducation: 'Education', panelCertificate: 'Certificate', panelLanguage: 'Language',
+          tablePeriod: 'Period', tableStatus: 'Status', tableRole: 'Role', tableDetails: 'Details',
+          stackPlatform: 'Platform', stackObservability: 'Observability', stackStreaming: 'Streaming', stackBackend: 'Backend', stackCerts: 'Certifications',
+          publishingPlan: 'Publishing Plan', aboutEmail: 'Email', aboutGithub: 'GitHub', aboutUniversity: 'Bachelor', aboutMajor: 'Major', aboutKorean: 'Korean', aboutEnglish: 'English'
+        }
+      };
+
       function ui(key) {
-        var table = data.i18n && data.i18n.ui && data.i18n.ui[currentLang];
-        return table && table[key] ? table[key] : key;
+        var table = (data.i18n && data.i18n.ui && data.i18n.ui[currentLang]) || fallbackUi[currentLang] || fallbackUi.ko;
+        return table[key] || key;
       }
 
       function applyTheme(theme) {
@@ -1281,10 +367,32 @@
 
       function renderSharedData() {
         var line2;
-        var tableHeaders;
+        var careerHeaders;
+        var projectHeaders;
         var stackMap;
         var aboutPanels;
+        var educationItems;
+        var linkedinUrl;
+        var linkedinLinkHtml;
         var langs;
+        var careerDetailTitle;
+        var careerExpandList;
+        var careerRows;
+        var projectItems;
+        var projectRows;
+        var projectBody;
+        var projectActiveRow;
+        var projectIndex;
+        var presentationHeaders;
+        var presentationItems;
+        var presentationRows;
+        var presentationBody;
+        var presentationActiveRow;
+        var presentationIndex;
+        var certificates;
+        var emailCopyLink;
+        var lines;
+        var activeRow;
 
         if (!data.profile) return;
 
@@ -1312,17 +420,19 @@
 
         // Section/Panel labels
         document.getElementById('row-metrics').lastChild.textContent = ' ' + ui('rowMetrics');
-        document.getElementById('row-career-stack').lastChild.textContent = ' ' + ui('rowCareerStack');
-        document.getElementById('row-projects-logs').lastChild.textContent = ' ' + ui('rowProjectsLogs');
+        document.getElementById('row-career-stack').lastChild.textContent = ' ' + ui('navCareer');
+        document.getElementById('row-projects-logs').lastChild.textContent = ' ' + ui('navProjects');
+        document.getElementById('row-presentations').lastChild.textContent = ' ' + ui('panelPresentations');
         document.getElementById('row-about').lastChild.textContent = ' ' + ui('rowAbout');
         document.getElementById('panel-engineer-overview').textContent = ui('panelEngineerOverview');
         document.getElementById('panel-career-timeline').textContent = ui('panelCareerTimeline');
         document.getElementById('panel-tech-stack').textContent = ui('panelTechStack');
         document.getElementById('panel-projects').textContent = ui('panelProjects');
+        document.getElementById('panel-presentations').textContent = ui('panelPresentations');
         document.getElementById('panel-blog-logs').textContent = ui('panelBlogLogs');
         document.getElementById('publishing-label').textContent = ui('publishingPlan');
-        document.getElementById('panel-contact').textContent = ui('panelContact');
         document.getElementById('panel-education').textContent = ui('panelEducation');
+        document.getElementById('panel-certificate').textContent = ui('panelCertificate');
         document.getElementById('panel-language').textContent = ui('panelLanguage');
 
         // Hero
@@ -1333,6 +443,29 @@
           '<span class="status-tag"><span class="dot dot-green"></span> ACTIVE - ' + data.profile.company + '</span>' +
           '<span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>' +
           '<span class="status-tag"><span class="dot dot-orange"></span> Since ' + data.profile.since + '</span>';
+
+        linkedinUrl = data.profile.linkedinUrl || '';
+        linkedinLinkHtml = linkedinUrl
+          ? '<a href="' + linkedinUrl + '" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="icon-link">' +
+              '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M4.983 3.5C4.983 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.13 1 2.5 1s2.483 1.12 2.483 2.5zM.5 8h4V23h-4V8zm7 0h3.8v2h.1c.53-1 1.82-2.1 3.74-2.1 4 0 4.74 2.63 4.74 6.05V23h-4v-7.9c0-1.88-.03-4.3-2.62-4.3-2.63 0-3.03 2.05-3.03 4.17V23h-4V8z"/></svg>' +
+            '</a>'
+          : '';
+        document.getElementById('overview-contact-links').innerHTML =
+          '<a href="mailto:' + data.profile.email + '" title="Email" class="icon-link" data-action="copy-email">' +
+            '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>' +
+          '</a>' +
+          '<a href="' + data.profile.githubUrl + '" target="_blank" rel="noopener noreferrer" title="GitHub" class="icon-link">' +
+            '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12a12 12 0 008.207 11.387c.6.11.793-.26.793-.577v-2.24c-3.338.726-4.033-1.415-4.033-1.415-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.238 1.839 1.238 1.07 1.834 2.807 1.304 3.492.997.107-.775.419-1.305.762-1.604-2.665-.304-5.467-1.334-5.467-5.93 0-1.31.47-2.381 1.236-3.22-.124-.304-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.5 11.5 0 0112 6.844c1.02.005 2.047.138 3.005.404 2.292-1.553 3.3-1.23 3.3-1.23.653 1.652.242 2.872.118 3.176.77.839 1.235 1.91 1.235 3.22 0 4.608-2.806 5.625-5.479 5.921.43.37.823 1.102.823 2.222v3.292c0 .319.192.69.8.577A12.001 12.001 0 0024 12c0-6.627-5.373-12-12-12z"/></svg>' +
+          '</a>' +
+          linkedinLinkHtml;
+
+        emailCopyLink = document.querySelector('#overview-contact-links [data-action="copy-email"]');
+        if (emailCopyLink) {
+          emailCopyLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            copyEmailToClipboard(data.profile.email);
+          });
+        }
 
         // Stats
         document.getElementById('stats-grid').innerHTML = data.stats.map(function(s) {
@@ -1348,24 +481,58 @@
         }).join('');
 
         // Career
-        tableHeaders = document.querySelectorAll('.table-panel thead th');
-        if (tableHeaders.length === 4) {
-          tableHeaders[0].textContent = ui('tablePeriod');
-          tableHeaders[1].textContent = ui('tableStatus');
-          tableHeaders[2].textContent = ui('tableRole');
-          tableHeaders[3].textContent = ui('tableDetails');
+        careerHeaders = document.querySelectorAll('#career .table-panel thead th');
+        if (careerHeaders.length === 4) {
+          careerHeaders[0].textContent = ui('tablePeriod');
+          careerHeaders[1].textContent = ui('tableStatus');
+          careerHeaders[2].textContent = ui('tableRole');
+          careerHeaders[3].textContent = ui('tableDetails');
         }
 
-        document.getElementById('career-body').innerHTML = data.career.map(function(item) {
+        document.getElementById('career-body').innerHTML = data.career.map(function(item, idx) {
           var status = t(item.status).toLowerCase();
           var statusClass = status === 'running' ? 'running' : 'completed';
-          return '<tr>' +
+          return '<tr class="is-clickable" data-career-index="' + idx + '">' +
             '<td class="td-period">' + item.period + '</td>' +
             '<td><span class="td-status ' + statusClass + '"><span class="dot ' + (status === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + status + '</span></td>' +
             '<td><div class="td-role">' + item.role + '</div><div class="td-team">' + t(item.team) + '</div></td>' +
             '<td class="td-desc">' + item.details.map(t).join('<br>') + '</td>' +
           '</tr>';
         }).join('');
+
+        careerDetailTitle = document.getElementById('career-detail-title');
+        careerExpandList = document.getElementById('career-expand-list');
+
+        function renderCareerExpand(index) {
+          var item = data.career[index];
+          if (!item) return;
+          if (careerDetailTitle) {
+            careerDetailTitle.textContent = 'Career Detail - ' + item.period + ' / ' + item.role;
+          }
+          if (careerExpandList) {
+            lines = item.expanded ? t(item.expanded) : [];
+            if (!Array.isArray(lines) || !lines.length) {
+              lines = item.details.map(t);
+            }
+            careerExpandList.innerHTML = lines.map(function(line) {
+              return '<li>' + line + '</li>';
+            }).join('');
+          }
+          document.querySelectorAll('#career-body tr').forEach(function(tr) {
+            tr.classList.remove('is-active');
+          });
+          activeRow = document.querySelector('#career-body tr[data-career-index="' + index + '"]');
+          if (activeRow) activeRow.classList.add('is-active');
+        }
+
+        careerRows = document.querySelectorAll('#career-body tr.is-clickable');
+        careerRows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            var idx = Number(this.getAttribute('data-career-index'));
+            renderCareerExpand(idx);
+          });
+        });
+        renderCareerExpand(0);
 
         // Stack
         stackMap = [
@@ -1382,14 +549,99 @@
           return '<div class="stack-category"><div class="stack-cat-label">' + group.label + '</div><div class="stack-tags">' + tags + '</div></div>';
         }).join('');
 
-        // Project + publishing
-        document.getElementById('project-body').innerHTML =
-          '<div><h3>' + data.project.title + '</h3><p>' + t(data.project.description) + '</p>' +
-          '<a href="' + data.project.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + data.project.label +
-          '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div>';
+        // Project master-detail
+        projectItems = (Array.isArray(data.projects) && data.projects.length) ? data.projects : [data.project];
+        projectHeaders = document.querySelectorAll('#projects .table-panel thead th');
+        if (projectHeaders.length === 4) {
+          projectHeaders[0].textContent = ui('tablePeriod');
+          projectHeaders[1].textContent = ui('tableStatus');
+          projectHeaders[2].textContent = ui('panelProjects');
+          projectHeaders[3].textContent = 'Summary';
+        }
+
+        document.getElementById('project-table-body').innerHTML = projectItems.map(function(p, idx) {
+          var pStatus = t(p.status || { ko: 'Done', en: 'Done' }).toLowerCase();
+          var pStatusClass = pStatus === 'running' ? 'running' : 'completed';
+          return '<tr class="is-clickable" data-project-index="' + idx + '">' +
+            '<td class="td-period">' + (p.period || '-') + '</td>' +
+            '<td><span class="td-status ' + pStatusClass + '"><span class="dot ' + (pStatus === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + pStatus + '</span></td>' +
+            '<td><div class="td-role">' + p.title + '</div><div class="td-team">' + p.label + '</div></td>' +
+            '<td class="td-desc">' + t(p.description) + '</td>' +
+          '</tr>';
+        }).join('');
+
+        projectBody = document.getElementById('project-body');
+        function renderProjectDetail(index) {
+          var p = projectItems[index];
+          if (!p || !projectBody) return;
+          document.getElementById('project-detail-title').textContent = 'Project Detail - #' + String(index + 1);
+          projectBody.innerHTML = '<div class="project-item"><h3>' + p.title + '</h3><p>' + t(p.description) + '</p>' +
+            '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + p.label +
+            '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div>';
+          document.querySelectorAll('#project-table-body tr').forEach(function(tr) { tr.classList.remove('is-active'); });
+          projectActiveRow = document.querySelector('#project-table-body tr[data-project-index="' + index + '"]');
+          if (projectActiveRow) projectActiveRow.classList.add('is-active');
+        }
+
+        projectRows = document.querySelectorAll('#project-table-body tr.is-clickable');
+        projectRows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            projectIndex = Number(this.getAttribute('data-project-index'));
+            renderProjectDetail(projectIndex);
+          });
+        });
+        renderProjectDetail(0);
+
+        // Presentations master-detail
+        presentationItems = Array.isArray(data.presentations) ? data.presentations : [];
+        presentationHeaders = document.querySelectorAll('#presentations .table-panel thead th');
+        if (presentationHeaders.length === 4) {
+          presentationHeaders[0].textContent = ui('tablePeriod');
+          presentationHeaders[1].textContent = ui('tableStatus');
+          presentationHeaders[2].textContent = ui('panelPresentations');
+          presentationHeaders[3].textContent = 'Summary';
+        }
+
+        document.getElementById('presentation-table-body').innerHTML = presentationItems.map(function(p, idx) {
+          var pStatus = t(p.status || { ko: 'Done', en: 'Done' }).toLowerCase();
+          var pStatusClass = pStatus === 'running' ? 'running' : 'completed';
+          return '<tr class="is-clickable" data-presentation-index="' + idx + '">' +
+            '<td class="td-period">' + (p.period || '-') + '</td>' +
+            '<td><span class="td-status ' + pStatusClass + '"><span class="dot ' + (pStatus === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + pStatus + '</span></td>' +
+            '<td><div class="td-role">' + p.title + '</div><div class="td-team">' + (p.label || '') + '</div></td>' +
+            '<td class="td-desc">' + t(p.description) + '</td>' +
+          '</tr>';
+        }).join('');
+
+        presentationBody = document.getElementById('presentation-body');
+        function renderPresentationDetail(index) {
+          var p = presentationItems[index];
+          if (!p || !presentationBody) return;
+          document.getElementById('presentation-detail-title').textContent = 'Presentation Detail - #' + String(index + 1);
+          presentationBody.innerHTML = '<div class="project-item"><h3>' + p.title + '</h3><p>' + t(p.description) + '</p>' +
+            (p.url ? '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + (p.label || p.url) + '</a>' : '') +
+          '</div>';
+          document.querySelectorAll('#presentation-table-body tr').forEach(function(tr) { tr.classList.remove('is-active'); });
+          presentationActiveRow = document.querySelector('#presentation-table-body tr[data-presentation-index="' + index + '"]');
+          if (presentationActiveRow) presentationActiveRow.classList.add('is-active');
+        }
+
+        presentationRows = document.querySelectorAll('#presentation-table-body tr.is-clickable');
+        presentationRows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            presentationIndex = Number(this.getAttribute('data-presentation-index'));
+            renderPresentationDetail(presentationIndex);
+          });
+        });
+        if (presentationItems.length) {
+          renderPresentationDetail(0);
+        } else {
+          presentationBody.innerHTML = '<div class="td-desc">No presentations yet.</div>';
+          document.getElementById('presentation-detail-title').textContent = 'Presentation Detail';
+        }
 
         document.getElementById('publishing-list').innerHTML = data.publishingPlan.map(function(item) {
-          return '<li style="margin-bottom:4px;">' + t(item) + '</li>';
+          return '<li>' + t(item) + '</li>';
         }).join('');
 
         // Blog logs
@@ -1405,12 +657,22 @@
         // About
         aboutPanels = document.querySelectorAll('#about .panel .panel-body');
         if (aboutPanels.length >= 3) {
-          aboutPanels[0].innerHTML =
-            '<div class="info-item"><div class="info-label">' + ui('aboutEmail') + '</div><div class="info-value"><a href="mailto:' + data.profile.email + '">' + data.profile.email + '</a></div></div>' +
-            '<div class="info-item"><div class="info-label">' + ui('aboutGithub') + '</div><div class="info-value"><a href="' + data.profile.githubUrl + '" target="_blank" rel="noopener noreferrer">' + data.profile.githubLabel + '</a></div></div>';
-          aboutPanels[1].innerHTML =
-            '<div class="info-item"><div class="info-label">' + ui('aboutUniversity') + '</div><div class="info-value">' + t(data.about.education.school) + '</div></div>' +
-            '<div class="info-item"><div class="info-label">' + ui('aboutMajor') + '</div><div class="info-value">' + t(data.about.education.major) + '</div></div>';
+          educationItems = (data.about && data.about.education && Array.isArray(data.about.education.items) && data.about.education.items.length)
+            ? data.about.education.items
+            : [{ school: data.about.education.school, major: data.about.education.major }];
+
+          aboutPanels[0].innerHTML = educationItems.map(function(ed) {
+            return '<div class="info-item"><div class="info-label">' + ui('aboutUniversity') + '</div><div class="info-value">' + t(ed.school) + '</div></div>' +
+                   '<div class="info-item"><div class="info-label">' + ui('aboutMajor') + '</div><div class="info-value">' + t(ed.major).replace(/\n/g, '<br>') + '</div></div>';
+          }).join('');
+
+          certificates = (data.about && Array.isArray(data.about.certificates))
+            ? data.about.certificates
+            : (Array.isArray(data.stack && data.stack.certifications) ? data.stack.certifications.map(function(c) { return { name: c }; }) : []);
+          aboutPanels[1].innerHTML = certificates.map(function(cert) {
+            return '<div class="info-item"><div class="info-value">' + (cert.name || '') + '</div></div>';
+          }).join('');
+
           langs = t(data.about.language).split(' / ');
           aboutPanels[2].innerHTML =
             '<div class="info-item"><div class="info-label">' + ui('aboutKorean') + '</div><div class="info-value">' + (langs[0] || '') + '</div></div>' +
@@ -1422,6 +684,55 @@
         updateLangButtons();
         applyTheme(currentTheme);
         animateSparklines();
+      }
+
+      function showCopyToast(message) {
+        var toast = document.getElementById('copy-toast');
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(showCopyToast._timer);
+        showCopyToast._timer = setTimeout(function() {
+          toast.classList.remove('show');
+        }, 1400);
+      }
+
+      function fallbackCopyText(text) {
+        var input = document.createElement('textarea');
+        input.value = text;
+        input.setAttribute('readonly', '');
+        input.style.position = 'absolute';
+        input.style.left = '-9999px';
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+
+      function copyEmailToClipboard(email) {
+        var msgSuccess = currentLang === 'ko' ? '이메일이 복사되었습니다' : 'Copied';
+        var msgFail = currentLang === 'ko' ? '복사에 실패했습니다' : 'Copy failed';
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email)
+            .then(function() { showCopyToast(msgSuccess); })
+            .catch(function() {
+              try {
+                fallbackCopyText(email);
+                showCopyToast(msgSuccess);
+              } catch (err) {
+                showCopyToast(msgFail);
+              }
+            });
+          return;
+        }
+
+        try {
+          fallbackCopyText(email);
+          showCopyToast(msgSuccess);
+        } catch (err2) {
+          showCopyToast(msgFail);
+        }
       }
 
       // Mobile menu
@@ -1469,6 +780,5 @@
       });
     })();
   </script>
-
 </body>
 </html>
