@@ -3,338 +3,1335 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="허유정의 기술 블로그 및 경력 포트폴리오">
-  <title>허유정 | DevOps & Data Observability Blog</title>
+  <meta name="description" content="허유정 — Data Observability & DevOps Engineer 포트폴리오">
+  <title>허유정 | Data Observability & DevOps Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
   <style>
-    :root {
-      --bg: #f5f7f4;
-      --surface: #ffffff;
-      --text: #1f2a1f;
-      --muted: #54635b;
-      --line: #d7dfd9;
-      --accent: #116149;
-      --accent-soft: #d7efe3;
-      --highlight: #e8f4ed;
-      --max-width: 1080px;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(22, 42, 30, 0.08);
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-    * {
-      box-sizing: border-box;
+    :root {
+      /* Grafana-authentic palette */
+      --bg:         #111217;
+      --surface:    #181b1f;
+      --card:       #1e2028;
+      --border:     #2a2f38;
+      --border-h:   #3a404b;
+      --text:       #d8d9da;
+      --text-sec:   #a7adb7;
+      --muted:      #7e8694;
+      --dim:        #5e6673;
+      --orange:     #ff6600;
+      --orange-dim: rgba(255,102,0,0.12);
+      --blue:       #5794f2;
+      --blue-dim:   rgba(87,148,242,0.12);
+      --green:      #73bf69;
+      --green-dim:  rgba(115,191,105,0.12);
+      --yellow:     #f2cc0c;
+      --yellow-dim: rgba(242,204,12,0.12);
+      --purple:     #b877d9;
+      --purple-dim: rgba(184,119,217,0.12);
+      --red:        #f2495c;
+      --red-dim:    rgba(242,73,92,0.12);
+      --radius:     6px;
+      --mono:       'JetBrains Mono', 'Consolas', monospace;
+      --sans:       'Inter', -apple-system, sans-serif;
     }
 
     body {
-      margin: 0;
-      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
-      background:
-        radial-gradient(circle at 10% 0%, #e6f3eb 0, transparent 38%),
-        radial-gradient(circle at 88% 12%, #dcefe7 0, transparent 28%),
-        var(--bg);
+      font-family: var(--sans);
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      min-height: 100vh;
     }
 
-    a {
-      color: inherit;
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR — Grafana-style left rail
+       ═══════════════════════════════════════ */
+    .sidebar {
+      width: 56px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 200;
+      transition: width 0.2s;
+    }
+
+    .sidebar-logo {
+      width: 32px; height: 32px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      background: var(--orange-dim);
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-item {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
       text-decoration: none;
     }
 
-    .container {
-      width: min(100% - 2rem, var(--max-width));
-      margin: 0 auto;
-      padding: 2.5rem 0 3.5rem;
+    .sidebar-item:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      text-decoration: none;
     }
 
-    .hero {
-      background: linear-gradient(145deg, #0c3f31, #0f5541);
-      color: #f7fffb;
-      border-radius: 18px;
-      padding: 2.2rem;
-      box-shadow: var(--shadow);
-      animation: rise 700ms ease-out;
+    .sidebar-item.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
     }
 
-    .hero h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 3vw, 2.7rem);
-      line-height: 1.2;
-      letter-spacing: -0.02em;
+    .sidebar-item.active::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      width: 3px; height: 20px;
+      background: var(--orange);
+      border-radius: 0 2px 2px 0;
     }
 
-    .hero p {
-      margin: 0.8rem 0 0;
-      color: #d8f3e8;
+    .sidebar-item svg { width: 20px; height: 20px; }
+
+    .sidebar-tooltip {
+      display: none;
+      position: absolute;
+      left: 52px;
+      background: #2a2f38;
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 999;
     }
 
-    .hero-meta {
-      margin-top: 1.5rem;
+    .sidebar-item:hover .sidebar-tooltip { display: block; }
+
+    .sidebar-divider {
+      width: 24px;
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    /* ═══════════════════════════════════════
+       TOP BAR — Grafana breadcrumb/controls
+       ═══════════════════════════════════════ */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      display: flex; align-items: center;
+      padding: 0 1.25rem;
+      justify-content: space-between;
+    }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8rem;
+    }
+
+    .breadcrumb-sep { color: var(--dim); }
+    .breadcrumb a { color: var(--muted); }
+    .breadcrumb a:hover { color: var(--text); text-decoration: none; }
+    .breadcrumb .current { color: var(--text); font-weight: 500; }
+
+    .topbar-controls {
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .time-range {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      color: var(--text-sec);
+    }
+
+    .time-range .icon { color: var(--muted); }
+
+    .refresh-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center;
+      font-size: 0.8rem;
+    }
+
+    .refresh-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════ */
+    .content-wrapper {
+      flex: 1;
+      margin-left: 56px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    .pill {
-      background: rgba(243, 255, 248, 0.12);
-      border: 1px solid rgba(243, 255, 248, 0.28);
-      border-radius: 999px;
-      padding: 0.35rem 0.85rem;
-      font-size: 0.9rem;
+    .main {
+      flex: 1;
+      padding: 16px;
+      width: 100%;
     }
 
-    .grid {
+    /* ═══════════════════════════════════════
+       GRAFANA PANELS
+       ═══════════════════════════════════════ */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .panel:hover { border-color: var(--border-h); }
+
+    .panel-header {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 38px;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .panel-title-icon {
+      width: 16px; height: 16px;
+      color: var(--muted);
+    }
+
+    .panel-actions {
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .panel-action-btn {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .panel-action-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    .panel-body { padding: 16px; }
+
+    /* ═══════════════════════════════════════
+       GRID LAYOUTS
+       ═══════════════════════════════════════ */
+    .grid-row { margin-bottom: 8px; }
+
+    .row-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .row-title .chevron { color: var(--muted); font-size: 0.7rem; }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .grid-2-1 {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 1.1rem;
-      margin-top: 1.1rem;
+      gap: 8px;
     }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 1.2rem;
-      box-shadow: var(--shadow);
-      animation: rise 900ms ease-out;
-    }
-
-    .card h2 {
-      margin: 0 0 0.9rem;
-      font-size: 1.15rem;
-      letter-spacing: -0.01em;
-    }
-
-    .timeline {
-      display: grid;
-      gap: 0.9rem;
-    }
-
-    .job {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 0.95rem;
-      background: linear-gradient(180deg, #fcfefc 0, #f8fbf9 100%);
-    }
-
-    .job h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .job .meta {
-      margin: 0.2rem 0 0.5rem;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .job ul {
-      margin: 0;
-      padding-left: 1.2rem;
-    }
-
-    .job li {
-      margin-bottom: 0.2rem;
-    }
-
-    .stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-    }
-
-    .stack span {
-      background: var(--accent-soft);
-      color: #174e3c;
-      font-size: 0.83rem;
-      border-radius: 999px;
-      padding: 0.26rem 0.72rem;
-      border: 1px solid #bfd9cd;
-    }
-
-    .post {
-      border-left: 3px solid var(--accent);
-      background: var(--highlight);
-      border-radius: 8px;
-      padding: 0.75rem 0.85rem;
-      margin-bottom: 0.7rem;
-    }
-
-    .post h3 {
-      margin: 0;
-      font-size: 0.99rem;
-    }
-
-    .post p {
-      margin: 0.35rem 0 0;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .split {
+    .grid-1-1 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.9rem;
+      gap: 8px;
     }
 
-    .list {
-      margin: 0;
-      padding-left: 1.1rem;
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
-    .list li {
-      margin-bottom: 0.3rem;
+    /* ═══════════════════════════════════════
+       HERO — "Overview" panel
+       ═══════════════════════════════════════ */
+    .hero-panel {
+      position: relative;
     }
 
-    footer {
-      margin-top: 1.3rem;
-      text-align: center;
+    .hero-panel .panel-body {
+      padding: 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-panel h1 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .hero-panel h1 .orange { color: var(--orange); }
+    .hero-panel h1 .blue { color: var(--blue); }
+
+    .hero-panel .subtitle {
+      color: var(--text-sec);
       font-size: 0.88rem;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .status-list {
+      display: flex; flex-direction: column; gap: 6px;
+      align-items: flex-end;
+    }
+
+    .status-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      color: var(--text-sec);
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green { background: var(--green); box-shadow: 0 0 6px rgba(115,191,105,0.5); }
+    .dot-blue { background: var(--blue); }
+    .dot-orange { background: var(--orange); }
+
+    /* ═══════════════════════════════════════
+       STAT PANELS (metric cards)
+       ═══════════════════════════════════════ */
+    .stat-panel .panel-body {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      line-height: 1;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.blue { color: var(--blue); }
+    .stat-value.orange { color: var(--orange); }
+    .stat-value.purple { color: var(--purple); }
+
+    .stat-sub {
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-top: 6px;
+      font-family: var(--mono);
+    }
+
+    /* Sparkline bar */
+    .sparkline {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 10px;
+      background: var(--card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sparkline-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s ease-out;
+    }
+
+    .sparkline-fill.green { background: var(--green); }
+    .sparkline-fill.blue { background: var(--blue); }
+    .sparkline-fill.orange { background: var(--orange); }
+    .sparkline-fill.purple { background: var(--purple); }
+
+    /* ═══════════════════════════════════════
+       TABLE PANEL (Career)
+       ═══════════════════════════════════════ */
+    .table-panel table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .table-panel th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .table-panel td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(42,47,56,0.5);
+      vertical-align: top;
+    }
+
+    .table-panel tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .table-panel tr:last-child td { border-bottom: none; }
+
+    .td-period {
+      font-family: var(--mono);
+      color: var(--yellow);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .td-role {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .td-team {
+      color: var(--text-sec);
+      font-size: 0.78rem;
+    }
+
+    .td-desc {
+      color: var(--text-sec);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .td-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    .td-status.running { background: var(--green-dim); color: var(--green); }
+    .td-status.completed { background: var(--blue-dim); color: var(--blue); }
+
+    /* ═══════════════════════════════════════
+       GAUGE / STACK PANEL
+       ═══════════════════════════════════════ */
+    .gauge-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gauge-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gauge-label {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-sec);
+      min-width: 100px;
+    }
+
+    .gauge-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--card);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease-out;
+    }
+
+    .gauge-fill.green { background: var(--green); }
+    .gauge-fill.blue { background: var(--blue); }
+    .gauge-fill.orange { background: var(--orange); }
+    .gauge-fill.yellow { background: var(--yellow); }
+    .gauge-fill.purple { background: var(--purple); }
+
+    /* Stack tags */
+    .stack-category {
+      margin-bottom: 12px;
+    }
+
+    .stack-category:last-child { margin-bottom: 0; }
+
+    .stack-cat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stack-tags {
+      display: flex; flex-wrap: wrap; gap: 4px;
+    }
+
+    .stack-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+      border: 1px solid;
+    }
+
+    .stack-tag.green { background: var(--green-dim); border-color: rgba(115,191,105,0.25); color: var(--green); }
+    .stack-tag.blue { background: var(--blue-dim); border-color: rgba(87,148,242,0.25); color: var(--blue); }
+    .stack-tag.orange { background: var(--orange-dim); border-color: rgba(255,102,0,0.25); color: var(--orange); }
+    .stack-tag.yellow { background: var(--yellow-dim); border-color: rgba(242,204,12,0.25); color: var(--yellow); }
+    .stack-tag.purple { background: var(--purple-dim); border-color: rgba(184,119,217,0.25); color: var(--purple); }
+
+    /* ═══════════════════════════════════════
+       LOG / ALERT PANEL (Blog)
+       ═══════════════════════════════════════ */
+    .log-entry {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(42,47,56,0.5);
+      transition: background 0.1s;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry:hover { background: rgba(255,255,255,0.02); }
+
+    .log-level {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .log-level.info { background: var(--blue-dim); color: var(--blue); }
+    .log-level.warn { background: var(--orange-dim); color: var(--orange); }
+    .log-level.debug { background: var(--green-dim); color: var(--green); }
+
+    .log-content { flex: 1; }
+
+    .log-msg {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .log-detail {
+      font-size: 0.78rem;
       color: var(--muted);
     }
 
-    @keyframes rise {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .log-time {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--dim);
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
+    /* ═══════════════════════════════════════
+       PROJECT CARD
+       ═══════════════════════════════════════ */
+    .project-body {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    }
+
+    .project-body h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .project-body p {
+      font-size: 0.82rem;
+      color: var(--text-sec);
+      margin-bottom: 8px;
+    }
+
+    .project-link {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--green);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+
+    .project-link:hover { color: #8ed888; }
+
+    /* ═══════════════════════════════════════
+       ABOUT / CREDENTIAL CARDS
+       ═══════════════════════════════════════ */
+    .info-item {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(42,47,56,0.5);
+    }
+
+    .info-item:last-child { border-bottom: none; }
+
+    .info-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-size: 0.85rem;
+      color: var(--text-sec);
+    }
+
+    .info-value a { color: var(--blue); }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════ */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--dim);
+      font-family: var(--mono);
+    }
+
+    /* ═══════════════════════════════════════
+       MOBILE RESPONSIVE
+       ═══════════════════════════════════════ */
+    .mobile-header { display: none; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+
+      .content-wrapper { margin-left: 0; }
+
+      .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 48px;
+        padding: 0 12px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; z-index: 200;
       }
 
-      .split {
-        grid-template-columns: 1fr;
+      .mobile-logo {
+        display: flex; align-items: center; gap: 8px;
+        font-weight: 700; font-size: 0.85rem; color: var(--text);
       }
 
-      .container {
-        width: min(100% - 1.3rem, var(--max-width));
+      .mobile-logo-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--orange);
       }
 
-      .hero {
-        padding: 1.55rem;
+      .mobile-menu-btn {
+        background: none; border: none;
+        color: var(--muted); cursor: pointer;
+        padding: 6px; border-radius: var(--radius);
       }
+
+      .mobile-menu-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+      .mobile-menu-btn svg { width: 22px; height: 22px; }
+
+      .mobile-nav {
+        display: none;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 8px;
+      }
+
+      .mobile-nav.open { display: block; }
+
+      .mobile-nav a {
+        display: block;
+        padding: 10px 12px;
+        color: var(--text-sec);
+        font-size: 0.85rem;
+        border-radius: var(--radius);
+        text-decoration: none;
+      }
+
+      .mobile-nav a:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+      .topbar { display: none; }
+
+      .main { padding: 12px; }
+
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-2-1 { grid-template-columns: 1fr; }
+      .grid-1-1 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+
+      .hero-panel .panel-body { padding: 16px; }
+      .status-list { align-items: flex-start; }
+
+      /* Career table horizontal scroll on mobile */
+      .table-panel .panel-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .table-panel table { min-width: 600px; }
+
+      /* Smaller stat values on mobile */
+      .stat-value { font-size: 1.6rem; }
+    }
+
+    /* ═══════════════════════════════════════
+       ANIMATIONS
+       ═══════════════════════════════════════ */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <section class="hero">
-      <h1>허유정</h1>
-      <p>Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
-      <div class="hero-meta">
-        <a class="pill" href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a>
-        <a class="pill" href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">GitHub Project</a>
-        <span class="pill">Samsung Electronics (2018~)</span>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <nav class="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">YJ</div>
+
+    <a href="#overview" class="sidebar-item active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
+      <span class="sidebar-tooltip">Overview</span>
+    </a>
+    <a href="#career" class="sidebar-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Career</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <span class="sidebar-tooltip">Career</span>
+    </a>
+    <a href="#stack" class="sidebar-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+      <span class="sidebar-tooltip">Tech Stack</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <a href="#projects" class="sidebar-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+      <span class="sidebar-tooltip">Projects</span>
+    </a>
+    <a href="#blog" class="sidebar-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Blog</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="sidebar-tooltip">Blog</span>
+    </a>
+    <a href="#about" class="sidebar-item">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>About</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <span class="sidebar-tooltip">About</span>
+    </a>
+  </nav>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content-wrapper">
+
+    <!-- ═══ MOBILE HEADER ═══ -->
+    <div class="mobile-header">
+      <div class="mobile-logo">
+        <span class="mobile-logo-dot"></span> yoojung.dashboard
       </div>
-    </section>
+      <button type="button" class="mobile-menu-btn" id="mob-btn" aria-label="메뉴">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>메뉴</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div class="mobile-nav" id="mob-nav">
+      <a href="#overview">Overview</a>
+      <a href="#career">Career</a>
+      <a href="#stack">Tech Stack</a>
+      <a href="#projects">Projects</a>
+      <a href="#blog">Blog</a>
+      <a href="#about">About</a>
+    </div>
 
-    <section class="grid" aria-label="Profile and Blog">
-      <article class="card">
-        <h2>Career Timeline</h2>
-        <div class="timeline">
-          <div class="job">
-            <h3>Data Observability Platform · DataOps Engineer</h3>
-            <p class="meta">Samsung Electronics · 2025.08 - Present</p>
-            <ul>
-              <li>45,000개 테이블 규모 ETL 파이프라인 상태/품질 가시화 아키텍처 설계 및 구축</li>
-              <li>Kafka → Data Prepper → OpenSearch 적재 구조 구현 및 실시간 알림 체계 구성</li>
-              <li>CDC 파이프라인(OGG/Kafka/Spark/Iceberg) 안정화 및 운영 자동화</li>
-            </ul>
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a href="#">Dashboards</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="#">Portfolio</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="current" id="breadcrumb-current">허유정 — Overview</span>
+      </div>
+      <div class="topbar-controls">
+        <div class="time-range">
+          <span class="icon">&#9200;</span>
+          <span>2018 – Present</span>
+        </div>
+        <button type="button" class="refresh-btn" title="Refresh">&#8635;</button>
+      </div>
+    </div>
+
+    <main class="main">
+
+      <!-- ═══ ROW: Overview ═══ -->
+      <div class="grid-row fade-in" id="overview">
+        <div class="panel hero-panel">
+          <div class="panel-header">
+            <span class="panel-title">
+              <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Engineer Overview
+            </span>
+            <div class="panel-actions">
+              <span class="panel-action-btn" title="View">&#8942;</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div>
+              <h1 id="hero-title">
+                <span class="orange">Data Observability</span> &amp;<br>
+                <span class="blue">DevOps</span> Engineer
+              </h1>
+              <p class="subtitle" id="hero-subtitle">Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
+            </div>
+            <div class="status-list" id="status-list">
+              <span class="status-tag"><span class="dot dot-green"></span> ACTIVE — Samsung Electronics</span>
+              <span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>
+              <span class="status-tag"><span class="dot dot-orange"></span> Since 2018</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ROW: Stats ═══ -->
+      <div class="grid-row fade-in">
+        <div class="row-title"><span class="chevron">&#9660;</span> Key Metrics</div>
+        <div class="grid-4" id="stats-grid">
+          <div class="panel stat-panel">
+            <div class="panel-header"><span class="panel-title">Experience</span></div>
+            <div class="panel-body">
+              <span class="stat-label">Years at Samsung</span>
+              <span class="stat-value green">7+</span>
+              <div class="sparkline"><div class="sparkline-fill green" style="width:85%"></div></div>
+            </div>
+          </div>
+          <div class="panel stat-panel">
+            <div class="panel-header"><span class="panel-title">K8s Certifications</span></div>
+            <div class="panel-body">
+              <span class="stat-label">Kubestronaut</span>
+              <span class="stat-value blue">5</span>
+              <span class="stat-sub">CKA CKAD CKS KCNA KCSA</span>
+              <div class="sparkline"><div class="sparkline-fill blue" style="width:100%"></div></div>
+            </div>
+          </div>
+          <div class="panel stat-panel">
+            <div class="panel-header"><span class="panel-title">ETL Scale</span></div>
+            <div class="panel-body">
+              <span class="stat-label">Tables Monitored</span>
+              <span class="stat-value orange">45K</span>
+              <div class="sparkline"><div class="sparkline-fill orange" style="width:92%"></div></div>
+            </div>
+          </div>
+          <div class="panel stat-panel">
+            <div class="panel-header"><span class="panel-title">Infra Scope</span></div>
+            <div class="panel-body">
+              <span class="stat-label">Prometheus Targets</span>
+              <span class="stat-value purple">6.2K</span>
+              <span class="stat-sub">servers + apps</span>
+              <div class="sparkline"><div class="sparkline-fill purple" style="width:78%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ROW: Career + Stack ═══ -->
+      <div class="grid-row fade-in" id="career">
+        <div class="row-title"><span class="chevron">&#9660;</span> Career &amp; Stack</div>
+        <div class="grid-2-1">
+
+          <!-- Career Table -->
+          <div class="panel table-panel">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Career</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                Career Timeline
+              </span>
+            </div>
+            <div class="panel-body" style="padding:0;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:15%">Period</th>
+                    <th style="width:12%">Status</th>
+                    <th style="width:28%">Role</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="career-body">
+                  <tr>
+                    <td class="td-period">2025.08–now</td>
+                    <td><span class="td-status running"><span class="dot dot-green"></span> running</span></td>
+                    <td>
+                      <div class="td-role">DataOps Engineer</div>
+                      <div class="td-team">Data Observability Platform</div>
+                    </td>
+                    <td class="td-desc">
+                      45,000개 테이블 ETL 파이프라인 가시화 아키텍처 설계<br>
+                      Kafka → Data Prepper → OpenSearch 실시간 알림<br>
+                      CDC 파이프라인 안정화 및 운영 자동화
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-period">2023.07–25.07</td>
+                    <td><span class="td-status completed"><span class="dot dot-blue"></span> done</span></td>
+                    <td>
+                      <div class="td-role">DevOps Platform Lead</div>
+                      <div class="td-team">Observability</div>
+                    </td>
+                    <td class="td-desc">
+                      On-prem K8s PaaS, Metric/Trace/Log 통합 모니터링<br>
+                      Prometheus 25대 (6,200서버, 5,800앱) 샤딩 설계<br>
+                      EFK 로그 파이프라인 및 ILM 자동화
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-period">2021.03–23.06</td>
+                    <td><span class="td-status completed"><span class="dot dot-blue"></span> done</span></td>
+                    <td>
+                      <div class="td-role">Backend Engineer</div>
+                      <div class="td-team">Semiconductor Quality</div>
+                    </td>
+                    <td class="td-desc">
+                      300GB/일 수율 배치 서버 및 Report 백엔드<br>
+                      Django/Python/Oracle 지표 분석 대시보드 리드
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="job">
-            <h3>DevOps Platform Lead · Observability</h3>
-            <p class="meta">Samsung Electronics · 2023.07 - 2025.07</p>
-            <ul>
-              <li>On-prem Kubernetes 기반 사내 PaaS 운영, Metric/Trace/Log 통합 모니터링 구축</li>
-              <li>Prometheus 25대 운영(약 6,200대 서버, 5,800개 앱), Helm 자동화와 수동 샤딩 체계 설계</li>
-              <li>Elasticsearch/Filebeat/Kibana 기반 로그 파이프라인 및 ILM 수명주기 자동화</li>
-            </ul>
+          <!-- Stack Panel -->
+          <div class="panel" id="stack">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                Tech Stack
+              </span>
+            </div>
+            <div class="panel-body" id="stack-body">
+              <div class="stack-category">
+                <div class="stack-cat-label">Platform</div>
+                <div class="stack-tags">
+                  <span class="stack-tag green">Kubernetes</span>
+                  <span class="stack-tag green">Helm</span>
+                  <span class="stack-tag green">OpenTelemetry</span>
+                </div>
+              </div>
+              <div class="stack-category">
+                <div class="stack-cat-label">Observability</div>
+                <div class="stack-tags">
+                  <span class="stack-tag blue">Prometheus</span>
+                  <span class="stack-tag blue">Grafana</span>
+                  <span class="stack-tag blue">OpenSearch</span>
+                  <span class="stack-tag blue">Elasticsearch</span>
+                </div>
+              </div>
+              <div class="stack-category">
+                <div class="stack-cat-label">Streaming</div>
+                <div class="stack-tags">
+                  <span class="stack-tag orange">Kafka</span>
+                </div>
+              </div>
+              <div class="stack-category">
+                <div class="stack-cat-label">Backend</div>
+                <div class="stack-tags">
+                  <span class="stack-tag yellow">Python</span>
+                  <span class="stack-tag yellow">Django</span>
+                  <span class="stack-tag yellow">Oracle</span>
+                </div>
+              </div>
+              <div class="stack-category">
+                <div class="stack-cat-label">Certifications</div>
+                <div class="stack-tags">
+                  <span class="stack-tag purple">CKA</span>
+                  <span class="stack-tag purple">CKAD</span>
+                  <span class="stack-tag purple">CKS</span>
+                  <span class="stack-tag purple">KCNA</span>
+                  <span class="stack-tag purple">KCSA</span>
+                  <span class="stack-tag purple">SQLD</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="job">
-            <h3>Backend Engineer · Semiconductor Quality Analytics</h3>
-            <p class="meta">Samsung Electronics · 2021.03 - 2023.06</p>
-            <ul>
-              <li>300GB/일 데이터 기반 수율/Fallout 배치 서버 및 Report 백엔드 개발</li>
-              <li>Django/Python/Oracle 기반 지표 분석 대시보드 백엔드 리드</li>
-            </ul>
+        </div>
+      </div>
+
+      <!-- ═══ ROW: Projects + Blog ═══ -->
+      <div class="grid-row fade-in" id="projects">
+        <div class="row-title"><span class="chevron">&#9660;</span> Projects &amp; Logs</div>
+        <div class="grid-1-1">
+
+          <!-- Projects -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                Projects
+              </span>
+            </div>
+            <div class="panel-body">
+              <div class="project-body" id="project-body">
+                <div>
+                  <h3>Cloud-Native Ticketing Platform (30,000 RPS)</h3>
+                  <p>GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증</p>
+                  <a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" class="project-link">
+                    github.com/traffic-tacos
+                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  </a>
+                </div>
+              </div>
+
+              <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:12px;">
+                <div class="stack-cat-label">Publishing Plan</div>
+                <ul id="publishing-list" style="padding-left:1rem;margin-top:6px;font-size:0.82rem;color:var(--text-sec);">
+                  <li style="margin-bottom:4px;">운영 장애 대응 사례 문서화</li>
+                  <li style="margin-bottom:4px;">모니터링 아키텍처 비교 분석 정기 발행</li>
+                  <li>Prometheus/OTel 운영 팁 아카이브 구축</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blog — Logs panel -->
+          <div class="panel" id="blog">
+            <div class="panel-header">
+              <span class="panel-title">
+                <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Blog</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                Blog — Log Stream
+              </span>
+              <div class="panel-actions">
+                <span class="panel-action-btn" title="Filter">&#9776;</span>
+              </div>
+            </div>
+            <div id="blog-log-list" style="padding:0;">
+              <div class="log-entry">
+                <span class="log-level info">INFO</span>
+                <div class="log-content">
+                  <div class="log-msg">Data Observability Architecture for Large-Scale ETL</div>
+                  <div class="log-detail">ETL 장애 탐지 시간을 줄이기 위한 실행 상태 판별 로직과 OpenSearch Trace 시각화</div>
+                </div>
+                <span class="log-time">latest</span>
+              </div>
+              <div class="log-entry">
+                <span class="log-level debug">DEBUG</span>
+                <div class="log-content">
+                  <div class="log-msg">Prometheus Sharding Strategy in On-Prem Clusters</div>
+                  <div class="log-detail">기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 경험</div>
+                </div>
+                <span class="log-time">2025</span>
+              </div>
+              <div class="log-entry">
+                <span class="log-level warn">PERF</span>
+                <div class="log-content">
+                  <div class="log-msg">What I Learned from 30K RPS Ticketing Load Tests</div>
+                  <div class="log-detail">k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증</div>
+                </div>
+                <span class="log-time">2024</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ ROW: About ═══ -->
+      <div class="grid-row fade-in" id="about">
+        <div class="row-title"><span class="chevron">&#9660;</span> About</div>
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Contact</span></div>
+            <div class="panel-body">
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value"><a href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">GitHub</div>
+                <div class="info-value"><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Education</span></div>
+            <div class="panel-body">
+              <div class="info-item">
+                <div class="info-label">University</div>
+                <div class="info-value">성균관대학교</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Major</div>
+                <div class="info-value">화학공학 / 컴퓨터공학 (복수전공)</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Language</span></div>
+            <div class="panel-body">
+              <div class="info-item">
+                <div class="info-label">Korean</div>
+                <div class="info-value">Native</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">English</div>
+                <div class="info-value">Professional · OPIC AL</div>
+              </div>
+            </div>
           </div>
         </div>
-      </article>
+      </div>
 
-      <aside class="card">
-        <h2>Core Stack</h2>
-        <div class="stack" aria-label="Tech stack">
-          <span>Kubernetes</span>
-          <span>OpenTelemetry</span>
-          <span>Prometheus</span>
-          <span>Grafana</span>
-          <span>Kafka</span>
-          <span>OpenSearch</span>
-          <span>Elasticsearch</span>
-          <span>Helm</span>
-          <span>Python</span>
-          <span>Django</span>
-          <span>Oracle</span>
-        </div>
-      </aside>
-    </section>
+    </main>
 
-    <section class="grid" aria-label="Blog and credentials">
-      <article class="card">
-        <h2>Latest Blog Notes</h2>
-        <div class="post">
-          <h3>Data Observability Architecture for Large-Scale ETL</h3>
-          <p>ETL 장애 탐지 시간을 줄이기 위해 실행 상태 판별 로직과 OpenSearch Trace 시각화 전략을 정리합니다.</p>
-        </div>
-        <div class="post">
-          <h3>Prometheus Sharding Strategy in On-Prem Clusters</h3>
-          <p>플랫폼 기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 실제 운영 경험을 공유합니다.</p>
-        </div>
-        <div class="post">
-          <h3>What I Learned from 30K RPS Ticketing Load Tests</h3>
-          <p>k6 기반 부하 테스트로 병목을 찾고 GitOps 기반 배포 안정성을 검증한 과정을 기록합니다.</p>
-        </div>
-      </article>
-
-      <aside class="card">
-        <h2>Highlights</h2>
-        <ul class="list">
-          <li>Kubestronaut (CKA, CKAD, CKS, KCNA, KCSA)</li>
-          <li>SQLD, Samsung Code Review Agent Certificate</li>
-          <li>성균관대학교 화학공학/컴퓨터공학(복수전공)</li>
-          <li>Korean (Native), English (Professional), OPIC AL</li>
-        </ul>
-      </aside>
-    </section>
-
-    <section class="card split" aria-label="Projects and publishing">
-      <article>
-        <h2>Featured Project</h2>
-        <p><strong>Cloud-Native Ticketing Platform (30,000 RPS)</strong></p>
-        <p>GitHub Actions + ArgoCD 기반 CI/CD, k6 부하 테스트, 확장성 검증 경험을 바탕으로 운영 안정성과 FinOps 관점을 동시에 다뤘습니다.</p>
-        <p><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
-      </article>
-      <article>
-        <h2>Publishing Plan</h2>
-        <ul class="list">
-          <li>운영 중 발생한 장애 대응 사례를 재현 가능한 형태로 문서화</li>
-          <li>플랫폼 모니터링 아키텍처 비교 분석 글 정기 발행</li>
-          <li>Prometheus/OpenTelemetry 운영 팁 아카이브 구축</li>
-        </ul>
-      </article>
-    </section>
-
-    <footer>
-      Built for GitHub Pages · Updated from cv.txt profile
+    <footer class="footer" id="main-footer">
+      &copy; 2025 허유정 · yoojung.dashboard · Built for GitHub Pages
     </footer>
-  </main>
+
+  </div>
+
+  <script src="./portfolio-data.js"></script>
+  <script>
+    function renderSharedData() {
+      var data = window.PORTFOLIO_DATA;
+      var line2;
+      var stackMap;
+      var langs;
+      if (!data) return;
+
+      document.title = data.profile.nameKo + ' | ' + data.profile.titleLine1 + ' & ' + data.profile.titleLine2;
+
+      var breadcrumb = document.getElementById('breadcrumb-current');
+      if (breadcrumb) breadcrumb.textContent = data.profile.nameKo + ' - Overview';
+
+      var heroTitle = document.getElementById('hero-title');
+      if (heroTitle) {
+        line2 = data.profile.titleLine2.replace(/ Engineer$/, '');
+        heroTitle.innerHTML = '<span class="orange">' + data.profile.titleLine1 + '</span> &amp;<br><span class="blue">' + line2 + '</span> Engineer';
+      }
+
+      var heroSubtitle = document.getElementById('hero-subtitle');
+      if (heroSubtitle) heroSubtitle.textContent = data.profile.subtitle;
+
+      var statusList = document.getElementById('status-list');
+      if (statusList) {
+        statusList.innerHTML = '';
+        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-green"></span> ACTIVE - ' + data.profile.company + '</span>');
+        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>');
+        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-orange"></span> Since ' + data.profile.since + '</span>');
+      }
+
+      var statsGrid = document.getElementById('stats-grid');
+      if (statsGrid) {
+        statsGrid.innerHTML = data.stats.map(function(s) {
+          return '<div class="panel stat-panel">' +
+            '<div class="panel-header"><span class="panel-title">' + s.title + '</span></div>' +
+            '<div class="panel-body">' +
+              '<span class="stat-label">' + s.label + '</span>' +
+              '<span class="stat-value ' + s.color + '">' + s.value + '</span>' +
+              (s.sub ? '<span class="stat-sub">' + s.sub + '</span>' : '') +
+              '<div class="sparkline"><div class="sparkline-fill ' + s.color + '" style="width:' + s.spark + '%"></div></div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      var careerBody = document.getElementById('career-body');
+      if (careerBody) {
+        careerBody.innerHTML = data.career.map(function(item) {
+          var statusClass = item.status === 'running' ? 'running' : 'completed';
+          return '<tr>' +
+            '<td class="td-period">' + item.period + '</td>' +
+            '<td><span class="td-status ' + statusClass + '"><span class="dot ' + (item.status === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + item.status + '</span></td>' +
+            '<td><div class="td-role">' + item.role + '</div><div class="td-team">' + item.team + '</div></td>' +
+            '<td class="td-desc">' + item.details.join('<br>') + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      var stackBody = document.getElementById('stack-body');
+      if (stackBody) {
+        stackMap = [
+          { key: 'platform', label: 'Platform', color: 'green' },
+          { key: 'observability', label: 'Observability', color: 'blue' },
+          { key: 'streaming', label: 'Streaming', color: 'orange' },
+          { key: 'backend', label: 'Backend', color: 'yellow' },
+          { key: 'certifications', label: 'Certifications', color: 'purple' }
+        ];
+        stackBody.innerHTML = stackMap.map(function(group) {
+          var tags = (data.stack[group.key] || []).map(function(tag) {
+            return '<span class="stack-tag ' + group.color + '">' + tag + '</span>';
+          }).join('');
+          return '<div class="stack-category"><div class="stack-cat-label">' + group.label + '</div><div class="stack-tags">' + tags + '</div></div>';
+        }).join('');
+      }
+
+      var projectBody = document.getElementById('project-body');
+      if (projectBody) {
+        projectBody.innerHTML = '<div><h3>' + data.project.title + '</h3><p>' + data.project.description + '</p>' +
+          '<a href="' + data.project.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + data.project.label +
+          '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div>';
+      }
+
+      var publishingList = document.getElementById('publishing-list');
+      if (publishingList) {
+        publishingList.innerHTML = data.publishingPlan.map(function(item) {
+          return '<li style="margin-bottom:4px;">' + item + '</li>';
+        }).join('');
+      }
+
+      var blogLogList = document.getElementById('blog-log-list');
+      if (blogLogList) {
+        blogLogList.innerHTML = data.blog.map(function(item) {
+          var levelClass = item.level === 'INFO' ? 'info' : (item.level === 'DEBUG' ? 'debug' : 'warn');
+          return '<div class="log-entry">' +
+            '<span class="log-level ' + levelClass + '">' + item.level + '</span>' +
+            '<div class="log-content"><div class="log-msg">' + item.title + '</div><div class="log-detail">' + item.detail + '</div></div>' +
+            '<span class="log-time">' + item.time + '</span>' +
+          '</div>';
+        }).join('');
+      }
+
+      var aboutPanels = document.querySelectorAll('#about .panel .panel-body');
+      if (aboutPanels.length >= 3) {
+        aboutPanels[0].innerHTML =
+          '<div class="info-item"><div class="info-label">Email</div><div class="info-value"><a href="mailto:' + data.profile.email + '">' + data.profile.email + '</a></div></div>' +
+          '<div class="info-item"><div class="info-label">GitHub</div><div class="info-value"><a href="' + data.profile.githubUrl + '" target="_blank" rel="noopener noreferrer">' + data.profile.githubLabel + '</a></div></div>';
+        aboutPanels[1].innerHTML =
+          '<div class="info-item"><div class="info-label">University</div><div class="info-value">' + data.about.education.school + '</div></div>' +
+          '<div class="info-item"><div class="info-label">Major</div><div class="info-value">' + data.about.education.major + '</div></div>';
+        langs = data.about.language.split(' / ');
+        aboutPanels[2].innerHTML =
+          '<div class="info-item"><div class="info-label">Korean</div><div class="info-value">' + (langs[0] || '') + '</div></div>' +
+          '<div class="info-item"><div class="info-label">English</div><div class="info-value">' + (langs.slice(1).join(' / ')) + '</div></div>';
+      }
+
+      var footer = document.getElementById('main-footer');
+      if (footer) footer.innerHTML = '&copy; ' + data.footer.year + ' ' + data.profile.nameKo + ' · yoojung.dashboard · ' + data.footer.builtFor;
+    }
+
+    // Mobile menu
+    document.getElementById('mob-btn').addEventListener('click', function() {
+      document.getElementById('mob-nav').classList.toggle('open');
+    });
+    document.querySelectorAll('#mob-nav a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        document.getElementById('mob-nav').classList.remove('open');
+      });
+    });
+
+    // Sidebar active state
+    document.querySelectorAll('.sidebar-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
+        this.classList.add('active');
+      });
+    });
+
+    // Fade-in on scroll
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+
+    // Animate sparklines on load
+    document.addEventListener('DOMContentLoaded', function() {
+      renderSharedData();
+      document.querySelectorAll('.sparkline-fill').forEach(function(bar) {
+        var w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(function() { bar.style.width = w; }, 300);
+      });
+    });
+  </script>
+
 </body>
 </html>
