@@ -41,6 +41,24 @@
       --sans:       'Inter', -apple-system, sans-serif;
     }
 
+    body[data-theme="light"] {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --card: #f8fafc;
+      --border: #d8dee9;
+      --border-h: #c4cedd;
+      --text: #1b2430;
+      --text-sec: #4a5668;
+      --muted: #6b778b;
+      --dim: #8a95a6;
+      --orange-dim: rgba(255, 102, 0, 0.08);
+      --blue-dim: rgba(87, 148, 242, 0.12);
+      --green-dim: rgba(115, 191, 105, 0.12);
+      --yellow-dim: rgba(242, 204, 12, 0.14);
+      --purple-dim: rgba(184, 119, 217, 0.12);
+      --red-dim: rgba(242, 73, 92, 0.12);
+    }
+
     body {
       font-family: var(--sans);
       background: var(--bg);
@@ -167,6 +185,21 @@
     .topbar-controls {
       display: flex; align-items: center; gap: 8px;
     }
+
+    .control-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      min-width: 48px;
+      height: 28px;
+    }
+
+    .control-btn:hover { border-color: var(--border-h); color: var(--text); }
 
     .time-range {
       display: inline-flex; align-items: center; gap: 6px;
@@ -689,7 +722,7 @@
 
       .content-wrapper { margin-left: 0; }
 
-      .mobile-header {
+    .mobile-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -698,6 +731,18 @@
         background: var(--surface);
         border-bottom: 1px solid var(--border);
         position: sticky; top: 0; z-index: 200;
+      }
+
+      .mobile-header-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .mobile-header .control-btn {
+        min-width: 40px;
+        padding: 4px 8px;
+        height: 30px;
       }
 
       .mobile-logo {
@@ -782,30 +827,30 @@
 
     <a href="#overview" class="sidebar-item active">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
-      <span class="sidebar-tooltip">Overview</span>
+      <span class="sidebar-tooltip" id="nav-overview">Overview</span>
     </a>
     <a href="#career" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Career</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      <span class="sidebar-tooltip">Career</span>
+      <span class="sidebar-tooltip" id="nav-career">Career</span>
     </a>
     <a href="#stack" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-      <span class="sidebar-tooltip">Tech Stack</span>
+      <span class="sidebar-tooltip" id="nav-tech">Tech Stack</span>
     </a>
 
     <div class="sidebar-divider"></div>
 
     <a href="#projects" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-      <span class="sidebar-tooltip">Projects</span>
+      <span class="sidebar-tooltip" id="nav-projects">Projects</span>
     </a>
     <a href="#blog" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Blog</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-      <span class="sidebar-tooltip">Blog</span>
+      <span class="sidebar-tooltip" id="nav-blog">Blog</span>
     </a>
     <a href="#about" class="sidebar-item">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>About</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-      <span class="sidebar-tooltip">About</span>
+      <span class="sidebar-tooltip" id="nav-about">About</span>
     </a>
   </nav>
 
@@ -817,33 +862,39 @@
       <div class="mobile-logo">
         <span class="mobile-logo-dot"></span> yoojung.dashboard
       </div>
-      <button type="button" class="mobile-menu-btn" id="mob-btn" aria-label="메뉴">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>메뉴</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
+      <div class="mobile-header-controls">
+        <button type="button" class="control-btn" id="lang-toggle-mobile">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle-mobile">Light</button>
+        <button type="button" class="mobile-menu-btn" id="mob-btn" aria-label="메뉴">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>메뉴</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
     </div>
     <div class="mobile-nav" id="mob-nav">
-      <a href="#overview">Overview</a>
-      <a href="#career">Career</a>
-      <a href="#stack">Tech Stack</a>
-      <a href="#projects">Projects</a>
-      <a href="#blog">Blog</a>
-      <a href="#about">About</a>
+      <a href="#overview" id="nav-overview-mobile">Overview</a>
+      <a href="#career" id="nav-career-mobile">Career</a>
+      <a href="#stack" id="nav-tech-mobile">Tech Stack</a>
+      <a href="#projects" id="nav-projects-mobile">Projects</a>
+      <a href="#blog" id="nav-blog-mobile">Blog</a>
+      <a href="#about" id="nav-about-mobile">About</a>
     </div>
 
     <!-- Top bar -->
     <div class="topbar">
       <div class="breadcrumb">
-        <a href="#">Dashboards</a>
+        <a href="#" id="crumb-dashboards">Dashboards</a>
         <span class="breadcrumb-sep">/</span>
-        <a href="#">Portfolio</a>
+        <a href="#" id="crumb-portfolio">Portfolio</a>
         <span class="breadcrumb-sep">/</span>
         <span class="current" id="breadcrumb-current">허유정 — Overview</span>
       </div>
       <div class="topbar-controls">
         <div class="time-range">
           <span class="icon">&#9200;</span>
-          <span>2018 – Present</span>
+          <span id="time-range-text">2018 - Present</span>
         </div>
+        <button type="button" class="control-btn" id="lang-toggle">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle">Light</button>
         <button type="button" class="refresh-btn" title="Refresh">&#8635;</button>
       </div>
     </div>
@@ -856,7 +907,7 @@
           <div class="panel-header">
             <span class="panel-title">
               <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Overview</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Engineer Overview
+              <span id="panel-engineer-overview">Engineer Overview</span>
             </span>
             <div class="panel-actions">
               <span class="panel-action-btn" title="View">&#8942;</span>
@@ -881,7 +932,7 @@
 
       <!-- ═══ ROW: Stats ═══ -->
       <div class="grid-row fade-in">
-        <div class="row-title"><span class="chevron">&#9660;</span> Key Metrics</div>
+        <div class="row-title" id="row-metrics"><span class="chevron">&#9660;</span> Key Metrics</div>
         <div class="grid-4" id="stats-grid">
           <div class="panel stat-panel">
             <div class="panel-header"><span class="panel-title">Experience</span></div>
@@ -922,7 +973,7 @@
 
       <!-- ═══ ROW: Career + Stack ═══ -->
       <div class="grid-row fade-in" id="career">
-        <div class="row-title"><span class="chevron">&#9660;</span> Career &amp; Stack</div>
+        <div class="row-title" id="row-career-stack"><span class="chevron">&#9660;</span> Career &amp; Stack</div>
         <div class="grid-2-1">
 
           <!-- Career Table -->
@@ -930,7 +981,7 @@
             <div class="panel-header">
               <span class="panel-title">
                 <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Career</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                Career Timeline
+                <span id="panel-career-timeline">Career Timeline</span>
               </span>
             </div>
             <div class="panel-body" style="padding:0;">
@@ -992,7 +1043,7 @@
             <div class="panel-header">
               <span class="panel-title">
                 <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Tech Stack</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                Tech Stack
+                <span id="panel-tech-stack">Tech Stack</span>
               </span>
             </div>
             <div class="panel-body" id="stack-body">
@@ -1046,7 +1097,7 @@
 
       <!-- ═══ ROW: Projects + Blog ═══ -->
       <div class="grid-row fade-in" id="projects">
-        <div class="row-title"><span class="chevron">&#9660;</span> Projects &amp; Logs</div>
+        <div class="row-title" id="row-projects-logs"><span class="chevron">&#9660;</span> Projects &amp; Logs</div>
         <div class="grid-1-1">
 
           <!-- Projects -->
@@ -1054,7 +1105,7 @@
             <div class="panel-header">
               <span class="panel-title">
                 <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Projects</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                Projects
+                <span id="panel-projects">Projects</span>
               </span>
             </div>
             <div class="panel-body">
@@ -1070,7 +1121,7 @@
               </div>
 
               <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:12px;">
-                <div class="stack-cat-label">Publishing Plan</div>
+                <div class="stack-cat-label" id="publishing-label">Publishing Plan</div>
                 <ul id="publishing-list" style="padding-left:1rem;margin-top:6px;font-size:0.82rem;color:var(--text-sec);">
                   <li style="margin-bottom:4px;">운영 장애 대응 사례 문서화</li>
                   <li style="margin-bottom:4px;">모니터링 아키텍처 비교 분석 정기 발행</li>
@@ -1085,7 +1136,7 @@
             <div class="panel-header">
               <span class="panel-title">
                 <svg class="panel-title-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>Blog</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                Blog — Log Stream
+                <span id="panel-blog-logs">Blog - Log Stream</span>
               </span>
               <div class="panel-actions">
                 <span class="panel-action-btn" title="Filter">&#9776;</span>
@@ -1124,10 +1175,10 @@
 
       <!-- ═══ ROW: About ═══ -->
       <div class="grid-row fade-in" id="about">
-        <div class="row-title"><span class="chevron">&#9660;</span> About</div>
+        <div class="row-title" id="row-about"><span class="chevron">&#9660;</span> About</div>
         <div class="grid-3">
           <div class="panel">
-            <div class="panel-header"><span class="panel-title">Contact</span></div>
+            <div class="panel-header"><span class="panel-title" id="panel-contact">Contact</span></div>
             <div class="panel-body">
               <div class="info-item">
                 <div class="info-label">Email</div>
@@ -1140,7 +1191,7 @@
             </div>
           </div>
           <div class="panel">
-            <div class="panel-header"><span class="panel-title">Education</span></div>
+            <div class="panel-header"><span class="panel-title" id="panel-education">Education</span></div>
             <div class="panel-body">
               <div class="info-item">
                 <div class="info-label">University</div>
@@ -1153,7 +1204,7 @@
             </div>
           </div>
           <div class="panel">
-            <div class="panel-header"><span class="panel-title">Language</span></div>
+            <div class="panel-header"><span class="panel-title" id="panel-language">Language</span></div>
             <div class="panel-body">
               <div class="info-item">
                 <div class="info-label">Korean</div>
@@ -1176,161 +1227,247 @@
 
   </div>
 
-  <script src="./portfolio-data.js"></script>
+  <script src="./portfolio-data.js?v=2"></script>
   <script>
-    function renderSharedData() {
-      var data = window.PORTFOLIO_DATA;
-      var line2;
-      var stackMap;
-      var langs;
-      if (!data) return;
+    (function() {
+      var data = window.PORTFOLIO_DATA || {};
+      var currentLang = localStorage.getItem('portfolio.lang') || (data.i18n && data.i18n.defaultLang) || 'ko';
+      var currentTheme = localStorage.getItem('portfolio.theme') || 'dark';
 
-      document.title = data.profile.nameKo + ' | ' + data.profile.titleLine1 + ' & ' + data.profile.titleLine2;
+      function t(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          return value[currentLang] || value.ko || value.en || '';
+        }
+        return value || '';
+      }
 
-      var breadcrumb = document.getElementById('breadcrumb-current');
-      if (breadcrumb) breadcrumb.textContent = data.profile.nameKo + ' - Overview';
+      function ui(key) {
+        var table = data.i18n && data.i18n.ui && data.i18n.ui[currentLang];
+        return table && table[key] ? table[key] : key;
+      }
 
-      var heroTitle = document.getElementById('hero-title');
-      if (heroTitle) {
+      function applyTheme(theme) {
+        currentTheme = theme;
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('portfolio.theme', theme);
+        var label = theme === 'dark' ? ui('topThemeLight') : ui('topThemeDark');
+        var btn1 = document.getElementById('theme-toggle');
+        var btn2 = document.getElementById('theme-toggle-mobile');
+        if (btn1) btn1.textContent = label;
+        if (btn2) btn2.textContent = label;
+      }
+
+      function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('portfolio.lang', lang);
+        renderSharedData();
+      }
+
+      function updateLangButtons() {
+        var nextLangLabel = ui('topLangButton');
+        var btn1 = document.getElementById('lang-toggle');
+        var btn2 = document.getElementById('lang-toggle-mobile');
+        if (btn1) btn1.textContent = nextLangLabel;
+        if (btn2) btn2.textContent = nextLangLabel;
+      }
+
+      function animateSparklines() {
+        document.querySelectorAll('.sparkline-fill').forEach(function(bar) {
+          var width = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(function() { bar.style.width = width; }, 300);
+        });
+      }
+
+      function renderSharedData() {
+        var line2;
+        var tableHeaders;
+        var stackMap;
+        var aboutPanels;
+        var langs;
+
+        if (!data.profile) return;
+
+        document.title = t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' | ' + data.profile.titleLine1 + ' & ' + data.profile.titleLine2;
+
+        // Top navigation labels
+        document.getElementById('nav-overview').textContent = ui('navOverview');
+        document.getElementById('nav-career').textContent = ui('navCareer');
+        document.getElementById('nav-tech').textContent = ui('navTech');
+        document.getElementById('nav-projects').textContent = ui('navProjects');
+        document.getElementById('nav-blog').textContent = ui('navBlog');
+        document.getElementById('nav-about').textContent = ui('navAbout');
+        document.getElementById('nav-overview-mobile').textContent = ui('navOverview');
+        document.getElementById('nav-career-mobile').textContent = ui('navCareer');
+        document.getElementById('nav-tech-mobile').textContent = ui('navTech');
+        document.getElementById('nav-projects-mobile').textContent = ui('navProjects');
+        document.getElementById('nav-blog-mobile').textContent = ui('navBlog');
+        document.getElementById('nav-about-mobile').textContent = ui('navAbout');
+
+        // Breadcrumb + top controls
+        document.getElementById('crumb-dashboards').textContent = ui('dashboards');
+        document.getElementById('crumb-portfolio').textContent = ui('portfolio');
+        document.getElementById('breadcrumb-current').textContent = t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' - ' + ui('overviewSuffix');
+        document.getElementById('time-range-text').textContent = ui('timeRange');
+
+        // Section/Panel labels
+        document.getElementById('row-metrics').lastChild.textContent = ' ' + ui('rowMetrics');
+        document.getElementById('row-career-stack').lastChild.textContent = ' ' + ui('rowCareerStack');
+        document.getElementById('row-projects-logs').lastChild.textContent = ' ' + ui('rowProjectsLogs');
+        document.getElementById('row-about').lastChild.textContent = ' ' + ui('rowAbout');
+        document.getElementById('panel-engineer-overview').textContent = ui('panelEngineerOverview');
+        document.getElementById('panel-career-timeline').textContent = ui('panelCareerTimeline');
+        document.getElementById('panel-tech-stack').textContent = ui('panelTechStack');
+        document.getElementById('panel-projects').textContent = ui('panelProjects');
+        document.getElementById('panel-blog-logs').textContent = ui('panelBlogLogs');
+        document.getElementById('publishing-label').textContent = ui('publishingPlan');
+        document.getElementById('panel-contact').textContent = ui('panelContact');
+        document.getElementById('panel-education').textContent = ui('panelEducation');
+        document.getElementById('panel-language').textContent = ui('panelLanguage');
+
+        // Hero
         line2 = data.profile.titleLine2.replace(/ Engineer$/, '');
-        heroTitle.innerHTML = '<span class="orange">' + data.profile.titleLine1 + '</span> &amp;<br><span class="blue">' + line2 + '</span> Engineer';
-      }
+        document.getElementById('hero-title').innerHTML = '<span class="orange">' + data.profile.titleLine1 + '</span> &amp;<br><span class="blue">' + line2 + '</span> Engineer';
+        document.getElementById('hero-subtitle').textContent = t(data.profile.subtitle);
+        document.getElementById('status-list').innerHTML =
+          '<span class="status-tag"><span class="dot dot-green"></span> ACTIVE - ' + data.profile.company + '</span>' +
+          '<span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>' +
+          '<span class="status-tag"><span class="dot dot-orange"></span> Since ' + data.profile.since + '</span>';
 
-      var heroSubtitle = document.getElementById('hero-subtitle');
-      if (heroSubtitle) heroSubtitle.textContent = data.profile.subtitle;
-
-      var statusList = document.getElementById('status-list');
-      if (statusList) {
-        statusList.innerHTML = '';
-        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-green"></span> ACTIVE - ' + data.profile.company + '</span>');
-        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-blue"></span> Kubestronaut Certified</span>');
-        statusList.insertAdjacentHTML('beforeend', '<span class="status-tag"><span class="dot dot-orange"></span> Since ' + data.profile.since + '</span>');
-      }
-
-      var statsGrid = document.getElementById('stats-grid');
-      if (statsGrid) {
-        statsGrid.innerHTML = data.stats.map(function(s) {
+        // Stats
+        document.getElementById('stats-grid').innerHTML = data.stats.map(function(s) {
           return '<div class="panel stat-panel">' +
-            '<div class="panel-header"><span class="panel-title">' + s.title + '</span></div>' +
+            '<div class="panel-header"><span class="panel-title">' + t(s.title) + '</span></div>' +
             '<div class="panel-body">' +
-              '<span class="stat-label">' + s.label + '</span>' +
+              '<span class="stat-label">' + t(s.label) + '</span>' +
               '<span class="stat-value ' + s.color + '">' + s.value + '</span>' +
-              (s.sub ? '<span class="stat-sub">' + s.sub + '</span>' : '') +
+              (s.sub ? '<span class="stat-sub">' + t(s.sub) + '</span>' : '') +
               '<div class="sparkline"><div class="sparkline-fill ' + s.color + '" style="width:' + s.spark + '%"></div></div>' +
             '</div>' +
           '</div>';
         }).join('');
-      }
 
-      var careerBody = document.getElementById('career-body');
-      if (careerBody) {
-        careerBody.innerHTML = data.career.map(function(item) {
-          var statusClass = item.status === 'running' ? 'running' : 'completed';
+        // Career
+        tableHeaders = document.querySelectorAll('.table-panel thead th');
+        if (tableHeaders.length === 4) {
+          tableHeaders[0].textContent = ui('tablePeriod');
+          tableHeaders[1].textContent = ui('tableStatus');
+          tableHeaders[2].textContent = ui('tableRole');
+          tableHeaders[3].textContent = ui('tableDetails');
+        }
+
+        document.getElementById('career-body').innerHTML = data.career.map(function(item) {
+          var status = t(item.status).toLowerCase();
+          var statusClass = status === 'running' ? 'running' : 'completed';
           return '<tr>' +
             '<td class="td-period">' + item.period + '</td>' +
-            '<td><span class="td-status ' + statusClass + '"><span class="dot ' + (item.status === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + item.status + '</span></td>' +
-            '<td><div class="td-role">' + item.role + '</div><div class="td-team">' + item.team + '</div></td>' +
-            '<td class="td-desc">' + item.details.join('<br>') + '</td>' +
+            '<td><span class="td-status ' + statusClass + '"><span class="dot ' + (status === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + status + '</span></td>' +
+            '<td><div class="td-role">' + item.role + '</div><div class="td-team">' + t(item.team) + '</div></td>' +
+            '<td class="td-desc">' + item.details.map(t).join('<br>') + '</td>' +
           '</tr>';
         }).join('');
-      }
 
-      var stackBody = document.getElementById('stack-body');
-      if (stackBody) {
+        // Stack
         stackMap = [
-          { key: 'platform', label: 'Platform', color: 'green' },
-          { key: 'observability', label: 'Observability', color: 'blue' },
-          { key: 'streaming', label: 'Streaming', color: 'orange' },
-          { key: 'backend', label: 'Backend', color: 'yellow' },
-          { key: 'certifications', label: 'Certifications', color: 'purple' }
+          { key: 'platform', label: ui('stackPlatform'), color: 'green' },
+          { key: 'observability', label: ui('stackObservability'), color: 'blue' },
+          { key: 'streaming', label: ui('stackStreaming'), color: 'orange' },
+          { key: 'backend', label: ui('stackBackend'), color: 'yellow' },
+          { key: 'certifications', label: ui('stackCerts'), color: 'purple' }
         ];
-        stackBody.innerHTML = stackMap.map(function(group) {
+        document.getElementById('stack-body').innerHTML = stackMap.map(function(group) {
           var tags = (data.stack[group.key] || []).map(function(tag) {
             return '<span class="stack-tag ' + group.color + '">' + tag + '</span>';
           }).join('');
           return '<div class="stack-category"><div class="stack-cat-label">' + group.label + '</div><div class="stack-tags">' + tags + '</div></div>';
         }).join('');
-      }
 
-      var projectBody = document.getElementById('project-body');
-      if (projectBody) {
-        projectBody.innerHTML = '<div><h3>' + data.project.title + '</h3><p>' + data.project.description + '</p>' +
+        // Project + publishing
+        document.getElementById('project-body').innerHTML =
+          '<div><h3>' + data.project.title + '</h3><p>' + t(data.project.description) + '</p>' +
           '<a href="' + data.project.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + data.project.label +
           '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><title>외부 링크</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div>';
-      }
 
-      var publishingList = document.getElementById('publishing-list');
-      if (publishingList) {
-        publishingList.innerHTML = data.publishingPlan.map(function(item) {
-          return '<li style="margin-bottom:4px;">' + item + '</li>';
+        document.getElementById('publishing-list').innerHTML = data.publishingPlan.map(function(item) {
+          return '<li style="margin-bottom:4px;">' + t(item) + '</li>';
         }).join('');
-      }
 
-      var blogLogList = document.getElementById('blog-log-list');
-      if (blogLogList) {
-        blogLogList.innerHTML = data.blog.map(function(item) {
+        // Blog logs
+        document.getElementById('blog-log-list').innerHTML = data.blog.map(function(item) {
           var levelClass = item.level === 'INFO' ? 'info' : (item.level === 'DEBUG' ? 'debug' : 'warn');
           return '<div class="log-entry">' +
             '<span class="log-level ' + levelClass + '">' + item.level + '</span>' +
-            '<div class="log-content"><div class="log-msg">' + item.title + '</div><div class="log-detail">' + item.detail + '</div></div>' +
+            '<div class="log-content"><div class="log-msg">' + item.title + '</div><div class="log-detail">' + t(item.detail) + '</div></div>' +
             '<span class="log-time">' + item.time + '</span>' +
           '</div>';
         }).join('');
+
+        // About
+        aboutPanels = document.querySelectorAll('#about .panel .panel-body');
+        if (aboutPanels.length >= 3) {
+          aboutPanels[0].innerHTML =
+            '<div class="info-item"><div class="info-label">' + ui('aboutEmail') + '</div><div class="info-value"><a href="mailto:' + data.profile.email + '">' + data.profile.email + '</a></div></div>' +
+            '<div class="info-item"><div class="info-label">' + ui('aboutGithub') + '</div><div class="info-value"><a href="' + data.profile.githubUrl + '" target="_blank" rel="noopener noreferrer">' + data.profile.githubLabel + '</a></div></div>';
+          aboutPanels[1].innerHTML =
+            '<div class="info-item"><div class="info-label">' + ui('aboutUniversity') + '</div><div class="info-value">' + t(data.about.education.school) + '</div></div>' +
+            '<div class="info-item"><div class="info-label">' + ui('aboutMajor') + '</div><div class="info-value">' + t(data.about.education.major) + '</div></div>';
+          langs = t(data.about.language).split(' / ');
+          aboutPanels[2].innerHTML =
+            '<div class="info-item"><div class="info-label">' + ui('aboutKorean') + '</div><div class="info-value">' + (langs[0] || '') + '</div></div>' +
+            '<div class="info-item"><div class="info-label">' + ui('aboutEnglish') + '</div><div class="info-value">' + (langs.slice(1).join(' / ')) + '</div></div>';
+        }
+
+        document.getElementById('main-footer').innerHTML = '&copy; ' + data.footer.year + ' ' + t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' · yoojung.dashboard · ' + t(data.footer.builtFor);
+
+        updateLangButtons();
+        applyTheme(currentTheme);
+        animateSparklines();
       }
 
-      var aboutPanels = document.querySelectorAll('#about .panel .panel-body');
-      if (aboutPanels.length >= 3) {
-        aboutPanels[0].innerHTML =
-          '<div class="info-item"><div class="info-label">Email</div><div class="info-value"><a href="mailto:' + data.profile.email + '">' + data.profile.email + '</a></div></div>' +
-          '<div class="info-item"><div class="info-label">GitHub</div><div class="info-value"><a href="' + data.profile.githubUrl + '" target="_blank" rel="noopener noreferrer">' + data.profile.githubLabel + '</a></div></div>';
-        aboutPanels[1].innerHTML =
-          '<div class="info-item"><div class="info-label">University</div><div class="info-value">' + data.about.education.school + '</div></div>' +
-          '<div class="info-item"><div class="info-label">Major</div><div class="info-value">' + data.about.education.major + '</div></div>';
-        langs = data.about.language.split(' / ');
-        aboutPanels[2].innerHTML =
-          '<div class="info-item"><div class="info-label">Korean</div><div class="info-value">' + (langs[0] || '') + '</div></div>' +
-          '<div class="info-item"><div class="info-label">English</div><div class="info-value">' + (langs.slice(1).join(' / ')) + '</div></div>';
+      // Mobile menu
+      document.getElementById('mob-btn').addEventListener('click', function() {
+        document.getElementById('mob-nav').classList.toggle('open');
+      });
+      document.querySelectorAll('#mob-nav a').forEach(function(a) {
+        a.addEventListener('click', function() {
+          document.getElementById('mob-nav').classList.remove('open');
+        });
+      });
+
+      // Sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
+          this.classList.add('active');
+        });
+      });
+
+      // Language toggle buttons
+      function onToggleLang() {
+        setLang(currentLang === 'ko' ? 'en' : 'ko');
       }
+      document.getElementById('lang-toggle').addEventListener('click', onToggleLang);
+      document.getElementById('lang-toggle-mobile').addEventListener('click', onToggleLang);
 
-      var footer = document.getElementById('main-footer');
-      if (footer) footer.innerHTML = '&copy; ' + data.footer.year + ' ' + data.profile.nameKo + ' · yoojung.dashboard · ' + data.footer.builtFor;
-    }
+      // Theme toggle buttons
+      function onToggleTheme() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      }
+      document.getElementById('theme-toggle').addEventListener('click', onToggleTheme);
+      document.getElementById('theme-toggle-mobile').addEventListener('click', onToggleTheme);
 
-    // Mobile menu
-    document.getElementById('mob-btn').addEventListener('click', function() {
-      document.getElementById('mob-nav').classList.toggle('open');
-    });
-    document.querySelectorAll('#mob-nav a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        document.getElementById('mob-nav').classList.remove('open');
+      // Fade-in on scroll
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) e.target.classList.add('visible');
+        });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
+
+      document.addEventListener('DOMContentLoaded', function() {
+        renderSharedData();
       });
-    });
-
-    // Sidebar active state
-    document.querySelectorAll('.sidebar-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
-        this.classList.add('active');
-      });
-    });
-
-    // Fade-in on scroll
-    var obs = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.fade-in').forEach(function(el) { obs.observe(el); });
-
-    // Animate sparklines on load
-    document.addEventListener('DOMContentLoaded', function() {
-      renderSharedData();
-      document.querySelectorAll('.sparkline-fill').forEach(function(bar) {
-        var w = bar.style.width;
-        bar.style.width = '0%';
-        setTimeout(function() { bar.style.width = w; }, 300);
-      });
-    });
+    })();
   </script>
 
 </body>

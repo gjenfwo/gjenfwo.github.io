@@ -25,6 +25,19 @@
       --mono: 'JetBrains Mono', 'Consolas', monospace;
     }
 
+    body[data-theme="light"] {
+      --bg: #f7f9fc;
+      --surface: #ffffff;
+      --border: #d4dbe7;
+      --text: #20293a;
+      --muted: #657085;
+      --green: #2f9b47;
+      --cyan: #2f78e0;
+      --yellow: #b07c14;
+      --purple: #8758bf;
+      --red: #d63b3b;
+    }
+
     body {
       font-family: var(--mono);
       background: var(--bg);
@@ -48,6 +61,30 @@
       padding: 0 1.5rem;
       display: flex; align-items: center; height: 48px; gap: 0;
     }
+
+    .header-spacer { flex: 1; }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-left: 0.6rem;
+    }
+
+    .ctrl-btn {
+      height: 28px;
+      min-width: 44px;
+      padding: 0 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+
+    .ctrl-btn:hover { color: var(--text); border-color: var(--green); }
 
     .tab {
       padding: 0.6rem 1.2rem;
@@ -333,6 +370,8 @@
       .tab { padding: 0.5rem 0.7rem; font-size: 0.75rem; }
       .ls-table { font-size: 0.78rem; }
       .about-grid { grid-template-columns: 1fr; }
+      .header-controls { gap: 0.3rem; margin-left: 0.3rem; }
+      .ctrl-btn { min-width: 38px; padding: 0 0.45rem; }
     }
   </style>
 </head>
@@ -344,11 +383,16 @@
         <span class="tab-dot yellow"></span>
         <span class="tab-dot green"></span>
       </div>
-      <a href="#career" class="tab active">career</a>
-      <a href="#stack" class="tab">stack</a>
-      <a href="#projects" class="tab">projects</a>
-      <a href="#blog" class="tab">blog</a>
-      <a href="#about" class="tab">about</a>
+      <a href="#career" class="tab active" id="tt-nav-career">career</a>
+      <a href="#stack" class="tab" id="tt-nav-stack">stack</a>
+      <a href="#projects" class="tab" id="tt-nav-projects">projects</a>
+      <a href="#blog" class="tab" id="tt-nav-blog">blog</a>
+      <a href="#about" class="tab" id="tt-nav-about">about</a>
+      <div class="header-spacer"></div>
+      <div class="header-controls">
+        <button type="button" class="ctrl-btn" id="tt-lang-toggle">EN</button>
+        <button type="button" class="ctrl-btn" id="tt-theme-toggle">Light</button>
+      </div>
     </div>
   </header>
 
@@ -427,16 +471,16 @@
       </div>
       <div class="about-grid">
         <div class="about-block">
-          <h4>Contact</h4>
+          <h4 id="tt-contact-label">Contact</h4>
           <p><a id="t-email-link" href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></p>
           <p><a id="t-github-link" href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
         </div>
         <div class="about-block">
-          <h4>Education</h4>
+          <h4 id="tt-education-label">Education</h4>
           <p id="t-education">성균관대학교<br>화학공학 / 컴퓨터공학 (복수전공)</p>
         </div>
         <div class="about-block">
-          <h4>Language</h4>
+          <h4 id="tt-language-label">Language</h4>
           <p id="t-language">Korean (Native)<br>English (Professional) · OPIC AL</p>
         </div>
       </div>
@@ -448,63 +492,115 @@
   <script src="./portfolio-data.js"></script>
   <script>
     (function() {
-      var data = window.PORTFOLIO_DATA;
-      if (!data) return;
+      var data = window.PORTFOLIO_DATA || {};
+      var currentLang = localStorage.getItem('portfolio.lang') || (data.i18n && data.i18n.defaultLang) || 'ko';
+      var currentTheme = localStorage.getItem('portfolio.theme') || 'dark';
 
-      document.title = data.profile.nameKo + " | " + data.profile.titleLine1 + " & " + data.profile.titleLine2;
-      document.getElementById('t-user').textContent = data.profile.terminalUser;
-      document.getElementById('t-path').textContent = data.profile.terminalPath;
-      document.getElementById('t-hero-title').innerHTML =
-        '<span class="green">' + data.profile.titleLine1 + '</span> &amp;<br><span class="cyan">' + data.profile.titleLine2.replace(' Engineer', '') + '</span> Engineer<span class="cursor-blink"></span>';
-      document.getElementById('t-hero-subtitle').textContent = data.profile.subtitle;
+      function t(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          return value[currentLang] || value.ko || value.en || '';
+        }
+        return value || '';
+      }
 
-      var badges = document.getElementById('t-badges');
-      badges.innerHTML = '';
-      badges.insertAdjacentHTML('beforeend', '<span class="badge"><span class="dot online"></span> ' + data.profile.company + ' (' + data.profile.since + ')</span>');
-      badges.insertAdjacentHTML('beforeend', '<span class="badge">Kubestronaut</span>');
-      badges.insertAdjacentHTML('beforeend', '<span class="badge">' + data.profile.email + '</span>');
+      function ui(key) {
+        var table = data.i18n && data.i18n.ui && data.i18n.ui[currentLang];
+        return table && table[key] ? table[key] : key;
+      }
 
-      var careerBody = document.getElementById('t-career-body');
-      careerBody.innerHTML = data.career.map(function(item) {
-        return '<tr>' +
-          '<td class="ls-period">' + item.period + '</td>' +
-          '<td><span class="ls-role">' + item.role + '</span><br><span class="ls-company">' + item.team + '</span></td>' +
-          '<td><div class="ls-desc">' + item.details.join('<br>') + '</div></td>' +
-        '</tr>';
-      }).join('');
+      function applyTheme(theme) {
+        currentTheme = theme;
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('portfolio.theme', theme);
+        document.getElementById('tt-theme-toggle').textContent = theme === 'dark' ? ui('topThemeLight') : ui('topThemeDark');
+      }
 
-      var stack = data.stack;
-      function q(arr) { return arr.map(function(v) { return '<span class="pkg-str">"' + v + '"</span>'; }).join(', '); }
-      var stackJson = document.getElementById('t-stack-json');
-      stackJson.innerHTML =
-        '<div class="pkg-line"><span class="pkg-bracket">{</span></div>' +
-        '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"platform"</span>: [' + q(stack.platform) + '],</div>' +
-        '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"observability"</span>: [' + q(stack.observability) + '],</div>' +
-        '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"streaming"</span>: [' + q(stack.streaming) + '],</div>' +
-        '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"backend"</span>: [' + q(stack.backend) + '],</div>' +
-        '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"certifications"</span>: [' + q(stack.certifications) + ']</div>' +
-        '<div class="pkg-line"><span class="pkg-bracket">}</span></div>';
+      function renderTerminal() {
+        var stack;
+        var emailLink;
+        var githubLink;
+        if (!data.profile) return;
 
-      document.getElementById('t-project-title').textContent = data.project.title;
-      document.getElementById('t-project-desc').textContent = data.project.description;
-      var pLink = document.getElementById('t-project-link');
-      pLink.href = data.project.url;
-      pLink.textContent = data.project.label + ' ->';
+        document.title = t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' | ' + data.profile.titleLine1 + ' & ' + data.profile.titleLine2;
 
-      var blogList = document.getElementById('t-blog-list');
-      blogList.innerHTML = data.blog.map(function(item) {
-        return '<div class="git-log-item"><span class="git-hash">' + item.hash + '</span><p class="git-msg">' + item.title + '</p><p class="git-meta">' + item.detail + '</p></div>';
-      }).join('');
+        document.getElementById('tt-nav-career').textContent = ui('navCareer').toLowerCase();
+        document.getElementById('tt-nav-stack').textContent = ui('navTech').toLowerCase();
+        document.getElementById('tt-nav-projects').textContent = ui('navProjects').toLowerCase();
+        document.getElementById('tt-nav-blog').textContent = ui('navBlog').toLowerCase();
+        document.getElementById('tt-nav-about').textContent = ui('navAbout').toLowerCase();
+        document.getElementById('tt-lang-toggle').textContent = ui('topLangButton');
 
-      var emailLink = document.getElementById('t-email-link');
-      emailLink.href = 'mailto:' + data.profile.email;
-      emailLink.textContent = data.profile.email;
-      var githubLink = document.getElementById('t-github-link');
-      githubLink.href = data.profile.githubUrl;
-      githubLink.textContent = data.profile.githubLabel;
-      document.getElementById('t-education').innerHTML = data.about.education.school + '<br>' + data.about.education.major;
-      document.getElementById('t-language').innerHTML = data.about.language.replace(' / ', '<br>').replace(' / ', '<br>');
-      document.getElementById('t-footer').innerHTML = '<span>$</span> echo "© ' + data.footer.year + ' ' + data.profile.nameKo + ' · ' + data.footer.builtFor + '"';
+        document.getElementById('t-user').textContent = data.profile.terminalUser;
+        document.getElementById('t-path').textContent = data.profile.terminalPath;
+        document.getElementById('t-hero-title').innerHTML =
+          '<span class="green">' + data.profile.titleLine1 + '</span> &amp;<br><span class="cyan">' + data.profile.titleLine2.replace(' Engineer', '') + '</span> Engineer<span class="cursor-blink"></span>';
+        document.getElementById('t-hero-subtitle').textContent = t(data.profile.subtitle);
+
+        var badges = document.getElementById('t-badges');
+        badges.innerHTML = '';
+        badges.insertAdjacentHTML('beforeend', '<span class="badge"><span class="dot online"></span> ' + data.profile.company + ' (' + data.profile.since + ')</span>');
+        badges.insertAdjacentHTML('beforeend', '<span class="badge">Kubestronaut</span>');
+        badges.insertAdjacentHTML('beforeend', '<span class="badge">' + data.profile.email + '</span>');
+
+        var careerBody = document.getElementById('t-career-body');
+        careerBody.innerHTML = data.career.map(function(item) {
+          return '<tr>' +
+            '<td class="ls-period">' + item.period + '</td>' +
+            '<td><span class="ls-role">' + item.role + '</span><br><span class="ls-company">' + t(item.team) + '</span></td>' +
+            '<td><div class="ls-desc">' + item.details.map(t).join('<br>') + '</div></td>' +
+          '</tr>';
+        }).join('');
+
+        stack = data.stack;
+        function q(arr) { return arr.map(function(v) { return '<span class="pkg-str">"' + v + '"</span>'; }).join(', '); }
+        var stackJson = document.getElementById('t-stack-json');
+        stackJson.innerHTML =
+          '<div class="pkg-line"><span class="pkg-bracket">{</span></div>' +
+          '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"platform"</span>: [' + q(stack.platform) + '],</div>' +
+          '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"observability"</span>: [' + q(stack.observability) + '],</div>' +
+          '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"streaming"</span>: [' + q(stack.streaming) + '],</div>' +
+          '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"backend"</span>: [' + q(stack.backend) + '],</div>' +
+          '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"certifications"</span>: [' + q(stack.certifications) + ']</div>' +
+          '<div class="pkg-line"><span class="pkg-bracket">}</span></div>';
+
+        document.getElementById('t-project-title').textContent = data.project.title;
+        document.getElementById('t-project-desc').textContent = t(data.project.description);
+        var pLink = document.getElementById('t-project-link');
+        pLink.href = data.project.url;
+        pLink.textContent = data.project.label + ' ->';
+
+        var blogList = document.getElementById('t-blog-list');
+        blogList.innerHTML = data.blog.map(function(item) {
+          return '<div class="git-log-item"><span class="git-hash">' + item.hash + '</span><p class="git-msg">' + item.title + '</p><p class="git-meta">' + t(item.detail) + '</p></div>';
+        }).join('');
+
+        emailLink = document.getElementById('t-email-link');
+        emailLink.href = 'mailto:' + data.profile.email;
+        emailLink.textContent = data.profile.email;
+        githubLink = document.getElementById('t-github-link');
+        githubLink.href = data.profile.githubUrl;
+        githubLink.textContent = data.profile.githubLabel;
+        document.getElementById('tt-contact-label').textContent = ui('panelContact');
+        document.getElementById('tt-education-label').textContent = ui('panelEducation');
+        document.getElementById('tt-language-label').textContent = ui('panelLanguage');
+        document.getElementById('t-education').innerHTML = t(data.about.education.school) + '<br>' + t(data.about.education.major);
+        document.getElementById('t-language').innerHTML = t(data.about.language).replace(' / ', '<br>').replace(' / ', '<br>');
+        document.getElementById('t-footer').innerHTML = '<span>$</span> echo "© ' + data.footer.year + ' ' + t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' · ' + t(data.footer.builtFor) + '"';
+
+        applyTheme(currentTheme);
+      }
+
+      document.getElementById('tt-lang-toggle').addEventListener('click', function() {
+        currentLang = currentLang === 'ko' ? 'en' : 'ko';
+        localStorage.setItem('portfolio.lang', currentLang);
+        renderTerminal();
+      });
+
+      document.getElementById('tt-theme-toggle').addEventListener('click', function() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+
+      renderTerminal();
     })();
   </script>
 </body>
