@@ -6,374 +6,8 @@
   <title>Concept A — Terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style-terminal.css">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --green: #3fb950;
-      --cyan: #58a6ff;
-      --yellow: #d29922;
-      --purple: #bc8cff;
-      --red: #f85149;
-      --mono: 'JetBrains Mono', 'Consolas', monospace;
-    }
-
-    body[data-theme="light"] {
-      --bg: #f7f9fc;
-      --surface: #ffffff;
-      --border: #d4dbe7;
-      --text: #20293a;
-      --muted: #657085;
-      --green: #2f9b47;
-      --cyan: #2f78e0;
-      --yellow: #b07c14;
-      --purple: #8758bf;
-      --red: #d63b3b;
-    }
-
-    body {
-      font-family: var(--mono);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: var(--cyan); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    /* Header — like a terminal tab bar */
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      width: 100%;
-      padding: 0 1.5rem;
-      display: flex; align-items: center; height: 48px; gap: 0;
-    }
-
-    .header-spacer { flex: 1; }
-
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      margin-left: 0.6rem;
-    }
-
-    .ctrl-btn {
-      height: 28px;
-      min-width: 44px;
-      padding: 0 0.6rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-    }
-
-    .ctrl-btn:hover { color: var(--text); border-color: var(--green); }
-
-    .tab {
-      padding: 0.6rem 1.2rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      cursor: pointer;
-      font-family: var(--mono);
-    }
-
-    .tab:hover, .tab.active {
-      color: var(--text);
-      border-bottom-color: var(--green);
-    }
-
-    .tab-dots {
-      display: flex; gap: 6px; margin-right: 1.5rem;
-    }
-
-    .tab-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-    }
-
-    .tab-dot.red { background: #f85149; }
-    .tab-dot.yellow { background: #d29922; }
-    .tab-dot.green { background: #3fb950; }
-
-    /* Main */
-    .main {
-      width: 100%;
-      padding: 3rem 1.5rem;
-    }
-
-    /* Hero — Terminal prompt */
-    .hero { margin-bottom: 4rem; }
-
-    .prompt-line {
-      display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .prompt {
-      color: var(--green);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .prompt-path { color: var(--cyan); }
-
-    .prompt-cmd {
-      color: var(--text);
-      font-size: 1rem;
-    }
-
-    .hero-output {
-      padding-left: 0;
-      margin-top: 1rem;
-    }
-
-    .hero-output h1 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-    }
-
-    .hero-output h1 .green { color: var(--green); }
-    .hero-output h1 .cyan { color: var(--cyan); }
-
-    .hero-output p {
-      color: var(--muted);
-      font-size: 0.95rem;
-      max-width: 600px;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .cursor-blink {
-      display: inline-block;
-      width: 10px; height: 1.2em;
-      background: var(--green);
-      animation: blink 1s step-end infinite;
-      vertical-align: text-bottom;
-      margin-left: 2px;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    .hero-badges {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 0.3rem 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .badge .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-    }
-
-    .badge .dot.online { background: var(--green); }
-
-    /* Section */
-    .section { margin-bottom: 3.5rem; }
-
-    .section-prompt {
-      display: flex; align-items: center; gap: 0.5rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-    }
-
-    .section-prompt .prompt { font-size: 0.85rem; }
-
-    /* Career — like ls -la output */
-    .ls-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    .ls-table th {
-      text-align: left;
-      color: var(--muted);
-      font-weight: 500;
-      padding: 0.5rem 1rem 0.5rem 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .ls-table td {
-      padding: 0.75rem 1rem 0.75rem 0;
-      border-bottom: 1px solid rgba(48,54,61,0.5);
-      vertical-align: top;
-    }
-
-    .ls-table tr:hover td { background: rgba(48,54,61,0.3); }
-
-    .ls-role { color: var(--cyan); font-weight: 600; }
-    .ls-company { color: var(--muted); }
-    .ls-period { color: var(--yellow); white-space: nowrap; }
-
-    .ls-desc {
-      font-family: 'Inter', sans-serif;
-      color: var(--muted);
-      font-size: 0.82rem;
-      margin-top: 0.3rem;
-      line-height: 1.5;
-    }
-
-    /* Stack — like package.json */
-    .pkg-block {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-      font-size: 0.85rem;
-    }
-
-    .pkg-line {
-      padding: 0.15rem 0;
-    }
-
-    .pkg-key { color: var(--cyan); }
-    .pkg-str { color: var(--green); }
-    .pkg-bracket { color: var(--muted); }
-    .pkg-comment { color: #484f58; font-style: italic; }
-
-    /* Blog — like git log */
-    .git-log-item {
-      padding: 1rem;
-      border-left: 2px solid var(--border);
-      margin-left: 0.5rem;
-      margin-bottom: 0.5rem;
-      transition: border-color 0.2s;
-    }
-
-    .git-log-item:hover {
-      border-left-color: var(--green);
-      background: rgba(48,54,61,0.2);
-    }
-
-    .git-hash { color: var(--yellow); font-size: 0.8rem; }
-
-    .git-msg {
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin: 0.25rem 0;
-    }
-
-    .git-meta {
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-family: 'Inter', sans-serif;
-    }
-
-    /* Project card */
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-      transition: border-color 0.2s;
-    }
-
-    .project-card:hover { border-color: var(--green); }
-
-    .project-card h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-
-    .project-card p {
-      font-family: 'Inter', sans-serif;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .project-card .link {
-      display: inline-flex; align-items: center; gap: 4px;
-      margin-top: 0.75rem;
-      font-size: 0.8rem;
-      color: var(--green);
-    }
-
-    /* About */
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-
-    .about-block {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-    }
-
-    .about-block h4 {
-      font-size: 0.8rem;
-      color: var(--green);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .about-block p, .about-block a {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    /* Footer */
-    .footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .footer span { color: var(--green); }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .header-inner { padding: 0 1rem; }
-      .main { padding: 2rem 1rem; }
-      .tab { padding: 0.5rem 0.7rem; font-size: 0.75rem; }
-      .ls-table { font-size: 0.78rem; }
-      .about-grid { grid-template-columns: 1fr; }
-      .header-controls { gap: 0.3rem; margin-left: 0.3rem; }
-      .ctrl-btn { min-width: 38px; padding: 0 0.45rem; }
-    }
-  </style>
 </head>
 <body>
   <header class="header">
@@ -414,7 +48,7 @@
       <div class="hero-badges" id="t-badges">
         <span class="badge"><span class="dot online"></span> Samsung Electronics (2018~)</span>
         <span class="badge">Kubestronaut</span>
-        <span class="badge">gjenfwo@gmail.com</span>
+        <span class="badge" id="t-email-badge">email</span>
       </div>
     </section>
 
@@ -430,6 +64,10 @@
         </thead>
         <tbody id="t-career-body"></tbody>
       </table>
+      <div class="career-expand" id="t-career-expand">
+        <h4>Career Detail</h4>
+        <ul id="t-career-expand-list"></ul>
+      </div>
     </section>
 
     <!-- Stack — package.json style -->
@@ -447,11 +85,7 @@
         <span class="prompt">$</span>
         <span class="prompt-cmd">kubectl get projects</span>
       </div>
-      <div class="project-card">
-        <h3 id="t-project-title">Cloud-Native Ticketing Platform (30,000 RPS)</h3>
-        <p id="t-project-desc">GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증</p>
-        <a id="t-project-link" href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" class="link">github.com/traffic-tacos →</a>
-      </div>
+      <div class="project-card project-list" id="t-project-list"></div>
     </section>
 
     <!-- Blog — git log style -->
@@ -472,8 +106,8 @@
       <div class="about-grid">
         <div class="about-block">
           <h4 id="tt-contact-label">Contact</h4>
-          <p><a id="t-email-link" href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></p>
-          <p><a id="t-github-link" href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
+          <p><a id="t-email-link" href="#">email</a></p>
+          <p><a id="t-github-link" href="#" target="_blank" rel="noopener noreferrer">github</a></p>
         </div>
         <div class="about-block">
           <h4 id="tt-education-label">Education</h4>
@@ -489,7 +123,7 @@
 
   <footer class="footer" id="t-footer"></footer>
 
-  <script src="./portfolio-data.js"></script>
+  <script src="./portfolio-data.js?v=6"></script>
   <script>
     (function() {
       var data = window.PORTFOLIO_DATA || {};
@@ -503,9 +137,14 @@
         return value || '';
       }
 
+      var fallbackUi = {
+        ko: { navCareer: 'Career', navTech: 'Tech Stack', navProjects: 'Projects', navBlog: 'Blog', navAbout: 'About', topLangButton: 'EN', topThemeDark: 'Dark', topThemeLight: 'Light', panelContact: 'Contact', panelEducation: 'Education', panelLanguage: 'Language' },
+        en: { navCareer: 'Career', navTech: 'Tech Stack', navProjects: 'Projects', navBlog: 'Blog', navAbout: 'About', topLangButton: 'KO', topThemeDark: 'Dark', topThemeLight: 'Light', panelContact: 'Contact', panelEducation: 'Education', panelLanguage: 'Language' }
+      };
+
       function ui(key) {
-        var table = data.i18n && data.i18n.ui && data.i18n.ui[currentLang];
-        return table && table[key] ? table[key] : key;
+        var table = (data.i18n && data.i18n.ui && data.i18n.ui[currentLang]) || fallbackUi[currentLang] || fallbackUi.ko;
+        return table[key] || key;
       }
 
       function applyTheme(theme) {
@@ -519,6 +158,13 @@
         var stack;
         var emailLink;
         var githubLink;
+        var projectItems;
+        var careerRows;
+        var expandList;
+        var expandTitle;
+        var activeRow;
+        var lines;
+        var educationItems;
         if (!data.profile) return;
 
         document.title = t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' | ' + data.profile.titleLine1 + ' & ' + data.profile.titleLine2;
@@ -543,13 +189,40 @@
         badges.insertAdjacentHTML('beforeend', '<span class="badge">' + data.profile.email + '</span>');
 
         var careerBody = document.getElementById('t-career-body');
-        careerBody.innerHTML = data.career.map(function(item) {
-          return '<tr>' +
+        careerBody.innerHTML = data.career.map(function(item, idx) {
+          return '<tr class="is-clickable" data-career-index="' + idx + '">' +
             '<td class="ls-period">' + item.period + '</td>' +
             '<td><span class="ls-role">' + item.role + '</span><br><span class="ls-company">' + t(item.team) + '</span></td>' +
             '<td><div class="ls-desc">' + item.details.map(t).join('<br>') + '</div></td>' +
           '</tr>';
         }).join('');
+
+        expandTitle = document.querySelector('#t-career-expand h4');
+        expandList = document.getElementById('t-career-expand-list');
+
+        function renderCareerExpand(index) {
+          var item = data.career[index];
+          if (!item) return;
+          if (expandTitle) {
+            expandTitle.textContent = 'Career Detail - ' + item.period + ' / ' + item.role;
+          }
+          lines = item.expanded ? t(item.expanded) : [];
+          if (!Array.isArray(lines) || !lines.length) lines = item.details.map(t);
+          if (expandList) {
+            expandList.innerHTML = lines.map(function(line) { return '<li>' + line + '</li>'; }).join('');
+          }
+          document.querySelectorAll('#t-career-body tr').forEach(function(tr) { tr.classList.remove('is-active'); });
+          activeRow = document.querySelector('#t-career-body tr[data-career-index="' + index + '"]');
+          if (activeRow) activeRow.classList.add('is-active');
+        }
+
+        careerRows = document.querySelectorAll('#t-career-body tr.is-clickable');
+        careerRows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            renderCareerExpand(Number(this.getAttribute('data-career-index')));
+          });
+        });
+        renderCareerExpand(0);
 
         stack = data.stack;
         function q(arr) { return arr.map(function(v) { return '<span class="pkg-str">"' + v + '"</span>'; }).join(', '); }
@@ -563,11 +236,11 @@
           '<div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"certifications"</span>: [' + q(stack.certifications) + ']</div>' +
           '<div class="pkg-line"><span class="pkg-bracket">}</span></div>';
 
-        document.getElementById('t-project-title').textContent = data.project.title;
-        document.getElementById('t-project-desc').textContent = t(data.project.description);
-        var pLink = document.getElementById('t-project-link');
-        pLink.href = data.project.url;
-        pLink.textContent = data.project.label + ' ->';
+        projectItems = (Array.isArray(data.projects) && data.projects.length) ? data.projects : [data.project];
+        document.getElementById('t-project-list').innerHTML = projectItems.map(function(p) {
+          return '<div class="project-item"><h3>' + p.title + '</h3><p>' + t(p.description) + '</p>' +
+            '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer" class="link">' + p.label + ' -></a></div>';
+        }).join('');
 
         var blogList = document.getElementById('t-blog-list');
         blogList.innerHTML = data.blog.map(function(item) {
@@ -583,7 +256,12 @@
         document.getElementById('tt-contact-label').textContent = ui('panelContact');
         document.getElementById('tt-education-label').textContent = ui('panelEducation');
         document.getElementById('tt-language-label').textContent = ui('panelLanguage');
-        document.getElementById('t-education').innerHTML = t(data.about.education.school) + '<br>' + t(data.about.education.major);
+        educationItems = (data.about && data.about.education && Array.isArray(data.about.education.items) && data.about.education.items.length)
+          ? data.about.education.items
+          : [{ school: data.about.education.school, major: data.about.education.major }];
+        document.getElementById('t-education').innerHTML = educationItems.map(function(ed) {
+          return t(ed.school) + '<br>' + t(ed.major).replace(/\n/g, '<br>');
+        }).join('<br><br>');
         document.getElementById('t-language').innerHTML = t(data.about.language).replace(' / ', '<br>').replace(' / ', '<br>');
         document.getElementById('t-footer').innerHTML = '<span>$</span> echo "© ' + data.footer.year + ' ' + t({ ko: data.profile.nameKo, en: data.profile.nameEn || data.profile.nameKo }) + ' · ' + t(data.footer.builtFor) + '"';
 
