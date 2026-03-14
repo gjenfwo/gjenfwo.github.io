@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept B — IDE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1e1e2e;
+      --sidebar: #181825;
+      --surface: #1e1e2e;
+      --tab-bg: #313244;
+      --tab-active: #1e1e2e;
+      --border: #313244;
+      --text: #cdd6f4;
+      --muted: #6c7086;
+      --blue: #89b4fa;
+      --green: #a6e3a1;
+      --peach: #fab387;
+      --mauve: #cba6f7;
+      --red: #f38ba8;
+      --yellow: #f9e2af;
+      --teal: #94e2d5;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Title bar */
+    .titlebar {
+      height: 36px;
+      background: #11111b;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .titlebar-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .titlebar-dot.r { background: #f38ba8; }
+    .titlebar-dot.y { background: #f9e2af; }
+    .titlebar-dot.g { background: #a6e3a1; }
+
+    .titlebar-text {
+      flex: 1;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Tab bar */
+    .tabbar {
+      display: flex;
+      background: var(--tab-bg);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .editor-tab {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-right: 1px solid rgba(49,50,68,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      font-family: var(--mono);
+      text-decoration: none;
+    }
+
+    .editor-tab:hover { color: var(--text); text-decoration: none; }
+
+    .editor-tab.active {
+      background: var(--tab-active);
+      color: var(--text);
+      border-bottom: 2px solid var(--blue);
+    }
+
+    .file-icon { font-size: 0.7rem; }
+    .file-icon.yml { color: var(--red); }
+    .file-icon.json { color: var(--yellow); }
+    .file-icon.md { color: var(--blue); }
+    .file-icon.py { color: var(--green); }
+    .file-icon.ts { color: var(--blue); }
+
+    /* IDE layout */
+    .ide-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 52px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem 0;
+      gap: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-icon {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      border-radius: 6px;
+      transition: all 0.15s;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .sidebar-icon:hover, .sidebar-icon.active {
+      color: var(--text);
+      background: rgba(137,180,250,0.1);
+    }
+
+    .sidebar-icon.active { border-left: 2px solid var(--blue); }
+
+    /* Explorer panel */
+    .explorer {
+      width: 220px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .explorer-title {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.75rem 1rem 0.5rem;
+    }
+
+    .file-tree { font-size: 0.8rem; }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.3rem 1rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.1s;
+      text-decoration: none;
+    }
+
+    .tree-item:hover { background: rgba(137,180,250,0.08); color: var(--text); text-decoration: none; }
+    .tree-item.active { background: rgba(137,180,250,0.12); color: var(--text); }
+
+    .tree-folder {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0.3rem 1rem;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+
+    .tree-indent { padding-left: 2rem; }
+
+    /* Editor area */
+    .editor {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 3rem;
+      position: relative;
+    }
+
+    .line-numbers {
+      position: absolute;
+      left: 0;
+      top: 2rem;
+      width: 2.5rem;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1.6;
+      opacity: 0.4;
+      user-select: none;
+    }
+
+    /* Editor content */
+    .editor h1 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      line-height: 1.3;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .editor h1 .blue { color: var(--blue); }
+    .editor h1 .green { color: var(--green); }
+
+    .editor .subtitle {
+      font-family: var(--sans);
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      max-width: 560px;
+    }
+
+    /* Sections */
+    .code-section { margin-bottom: 3rem; }
+
+    .code-comment {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+
+    .code-comment::before { content: '// '; color: #585b70; }
+
+    /* Career blocks */
+    .career-block {
+      background: rgba(49,50,68,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s;
+    }
+
+    .career-block:hover { border-color: var(--blue); }
+
+    .career-block h3 { font-size: 0.95rem; color: var(--blue); margin-bottom: 0.15rem; }
+
+    .career-block .meta {
+      font-size: 0.78rem; color: var(--peach); margin-bottom: 0.6rem;
+    }
+
+    .career-block ul {
+      padding-left: 1.1rem;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .career-block li { margin-bottom: 0.2rem; }
+
+    /* Stack display */
+    .stack-group { margin-bottom: 0.75rem; }
+
+    .stack-label {
+      font-size: 0.75rem;
+      color: var(--mauve);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .stack-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+    .stack-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(137,180,250,0.1);
+      border: 1px solid rgba(137,180,250,0.2);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--blue);
+    }
+
+    /* Blog entries */
+    .blog-entry {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(49,50,68,0.4);
+    }
+
+    .blog-entry:last-child { border-bottom: none; }
+
+    .blog-entry h4 {
+      font-size: 0.9rem;
+      color: var(--green);
+      margin-bottom: 0.2rem;
+    }
+
+    .blog-entry p {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* About */
+    .about-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .about-item {
+      background: rgba(49,50,68,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .about-item h4 {
+      font-size: 0.75rem;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .about-item p {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* Status bar */
+    .statusbar {
+      height: 28px;
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      font-size: 0.7rem;
+      color: #1e1e2e;
+      justify-content: space-between;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .statusbar-left, .statusbar-right {
+      display: flex; align-items: center; gap: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar, .explorer { display: none; }
+      .editor { padding: 1.5rem 1rem; }
+      body { overflow-y: auto; }
+      .ide-layout { flex-direction: column; }
+      .about-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Title bar -->
+  <div class="titlebar">
+    <span class="titlebar-dot r"></span>
+    <span class="titlebar-dot y"></span>
+    <span class="titlebar-dot g"></span>
+    <span class="titlebar-text">허유정 — portfolio</span>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tabbar">
+    <a href="#hero" class="editor-tab active">
+      <span class="file-icon yml">&#9679;</span> README.md
+    </a>
+    <a href="#career" class="editor-tab">
+      <span class="file-icon json">&#9679;</span> career.json
+    </a>
+    <a href="#stack" class="editor-tab">
+      <span class="file-icon py">&#9679;</span> stack.yml
+    </a>
+    <a href="#projects" class="editor-tab">
+      <span class="file-icon ts">&#9679;</span> projects.ts
+    </a>
+    <a href="#blog" class="editor-tab">
+      <span class="file-icon md">&#9679;</span> blog.md
+    </a>
+  </div>
+
+  <div class="ide-layout">
+    <!-- Sidebar icons -->
+    <div class="sidebar">
+      <div class="sidebar-icon active" title="Explorer">&#9776;</div>
+      <div class="sidebar-icon" title="Search">&#8981;</div>
+      <div class="sidebar-icon" title="Git">&#10010;</div>
+      <div class="sidebar-icon" title="Extensions">&#9881;</div>
+    </div>
+
+    <!-- File explorer -->
+    <div class="explorer">
+      <div class="explorer-title">Explorer</div>
+      <div class="file-tree">
+        <div class="tree-folder">&#9660; portfolio</div>
+        <a href="#hero" class="tree-item tree-indent active"><span class="file-icon md">&#9679;</span> README.md</a>
+        <a href="#career" class="tree-item tree-indent"><span class="file-icon json">&#9679;</span> career.json</a>
+        <a href="#stack" class="tree-item tree-indent"><span class="file-icon py">&#9679;</span> stack.yml</a>
+        <a href="#projects" class="tree-item tree-indent"><span class="file-icon ts">&#9679;</span> projects.ts</a>
+        <a href="#blog" class="tree-item tree-indent"><span class="file-icon md">&#9679;</span> blog.md</a>
+        <a href="#about" class="tree-item tree-indent"><span class="file-icon yml">&#9679;</span> about.yml</a>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor">
+      <section id="hero">
+        <h1>
+          <span class="green">Data Observability</span> &amp;<br>
+          <span class="blue">DevOps</span> Engineer
+        </h1>
+        <p class="subtitle">Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
+      </section>
+
+      <section id="career" class="code-section">
+        <div class="code-comment">career.json — Samsung Electronics (2018~)</div>
+        <div class="career-block">
+          <h3>Data Observability Platform · DataOps Engineer</h3>
+          <div class="meta">2025.08 – Present</div>
+          <ul>
+            <li>45,000개 테이블 ETL 파이프라인 상태/품질 가시화 아키텍처 설계 및 구축</li>
+            <li>Kafka → Data Prepper → OpenSearch 적재 구조 및 실시간 알림 체계</li>
+            <li>CDC 파이프라인(OGG/Kafka/Spark/Iceberg) 안정화 및 운영 자동화</li>
+          </ul>
+        </div>
+        <div class="career-block">
+          <h3>DevOps Platform Lead · Observability</h3>
+          <div class="meta">2023.07 – 2025.07</div>
+          <ul>
+            <li>On-prem K8s PaaS 운영, Metric/Trace/Log 통합 모니터링 구축</li>
+            <li>Prometheus 25대 (6,200서버, 5,800앱) Helm 자동화 및 샤딩 설계</li>
+            <li>EFK 로그 파이프라인 및 ILM 수명주기 자동화</li>
+          </ul>
+        </div>
+        <div class="career-block">
+          <h3>Backend Engineer · Semiconductor Quality Analytics</h3>
+          <div class="meta">2021.03 – 2023.06</div>
+          <ul>
+            <li>300GB/일 수율/Fallout 배치 서버 및 Report 백엔드 개발</li>
+            <li>Django/Python/Oracle 지표 분석 대시보드 백엔드 리드</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="stack" class="code-section">
+        <div class="code-comment">stack.yml — Core Technologies</div>
+        <div class="stack-group">
+          <div class="stack-label">Platform</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Kubernetes</span>
+            <span class="stack-tag">Helm</span>
+            <span class="stack-tag">OpenTelemetry</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Observability</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Prometheus</span>
+            <span class="stack-tag">Grafana</span>
+            <span class="stack-tag">OpenSearch</span>
+            <span class="stack-tag">Elasticsearch</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Backend</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">Django</span>
+            <span class="stack-tag">Oracle</span>
+            <span class="stack-tag">Kafka</span>
+          </div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Certifications</div>
+          <div class="stack-tags">
+            <span class="stack-tag">CKA</span>
+            <span class="stack-tag">CKAD</span>
+            <span class="stack-tag">CKS</span>
+            <span class="stack-tag">KCNA</span>
+            <span class="stack-tag">KCSA</span>
+            <span class="stack-tag">SQLD</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="code-section">
+        <div class="code-comment">projects.ts — Featured</div>
+        <div class="career-block">
+          <h3>Cloud-Native Ticketing Platform (30,000 RPS)</h3>
+          <p style="font-family:var(--sans);font-size:0.85rem;color:var(--muted);margin:0.5rem 0;">
+            GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증
+          </p>
+          <a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;color:var(--green);">
+            github.com/traffic-tacos →
+          </a>
+        </div>
+      </section>
+
+      <section id="blog" class="code-section">
+        <div class="code-comment">blog.md — Latest Posts</div>
+        <div class="blog-entry">
+          <h4>Data Observability Architecture for Large-Scale ETL</h4>
+          <p>ETL 장애 탐지 시간을 줄이기 위한 실행 상태 판별 로직과 OpenSearch Trace 시각화</p>
+        </div>
+        <div class="blog-entry">
+          <h4>Prometheus Sharding Strategy in On-Prem Clusters</h4>
+          <p>기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 경험</p>
+        </div>
+        <div class="blog-entry">
+          <h4>What I Learned from 30K RPS Ticketing Load Tests</h4>
+          <p>k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증</p>
+        </div>
+      </section>
+
+      <section id="about" class="code-section">
+        <div class="code-comment">about.yml — Contact & Credentials</div>
+        <div class="about-row">
+          <div class="about-item">
+            <h4>Contact</h4>
+            <p><a href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></p>
+            <p style="margin-top:0.3rem;"><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
+          </div>
+          <div class="about-item">
+            <h4>Education</h4>
+            <p>성균관대학교<br>화학공학 / 컴퓨터공학 (복수전공)</p>
+          </div>
+          <div class="about-item">
+            <h4>Language</h4>
+            <p>Korean (Native)<br>English (Professional) · OPIC AL</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="statusbar">
+    <div class="statusbar-left">
+      <span>&#9432; main</span>
+      <span>UTF-8</span>
+      <span>YAML</span>
+    </div>
+    <div class="statusbar-right">
+      <span>Samsung Electronics</span>
+      <span>Kubestronaut</span>
+      <span>Ln 1, Col 1</span>
+    </div>
+  </div>
+
+</body>
+</html>

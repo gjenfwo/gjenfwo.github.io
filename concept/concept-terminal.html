@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept A — Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --green: #3fb950;
+      --cyan: #58a6ff;
+      --yellow: #d29922;
+      --purple: #bc8cff;
+      --red: #f85149;
+      --mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header — like a terminal tab bar */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      width: 100%;
+      padding: 0 1.5rem;
+      display: flex; align-items: center; height: 48px; gap: 0;
+    }
+
+    .tab {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-family: var(--mono);
+    }
+
+    .tab:hover, .tab.active {
+      color: var(--text);
+      border-bottom-color: var(--green);
+    }
+
+    .tab-dots {
+      display: flex; gap: 6px; margin-right: 1.5rem;
+    }
+
+    .tab-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+
+    .tab-dot.red { background: #f85149; }
+    .tab-dot.yellow { background: #d29922; }
+    .tab-dot.green { background: #3fb950; }
+
+    /* Main */
+    .main {
+      width: 100%;
+      padding: 3rem 1.5rem;
+    }
+
+    /* Hero — Terminal prompt */
+    .hero { margin-bottom: 4rem; }
+
+    .prompt-line {
+      display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .prompt {
+      color: var(--green);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .prompt-path { color: var(--cyan); }
+
+    .prompt-cmd {
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .hero-output {
+      padding-left: 0;
+      margin-top: 1rem;
+    }
+
+    .hero-output h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-output h1 .green { color: var(--green); }
+    .hero-output h1 .cyan { color: var(--cyan); }
+
+    .hero-output p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 600px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 10px; height: 1.2em;
+      background: var(--green);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hero-badges {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0.3rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+
+    .badge .dot.online { background: var(--green); }
+
+    /* Section */
+    .section { margin-bottom: 3.5rem; }
+
+    .section-prompt {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .section-prompt .prompt { font-size: 0.85rem; }
+
+    /* Career — like ls -la output */
+    .ls-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .ls-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 500;
+      padding: 0.5rem 1rem 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ls-table td {
+      padding: 0.75rem 1rem 0.75rem 0;
+      border-bottom: 1px solid rgba(48,54,61,0.5);
+      vertical-align: top;
+    }
+
+    .ls-table tr:hover td { background: rgba(48,54,61,0.3); }
+
+    .ls-role { color: var(--cyan); font-weight: 600; }
+    .ls-company { color: var(--muted); }
+    .ls-period { color: var(--yellow); white-space: nowrap; }
+
+    .ls-desc {
+      font-family: 'Inter', sans-serif;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 0.3rem;
+      line-height: 1.5;
+    }
+
+    /* Stack — like package.json */
+    .pkg-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      font-size: 0.85rem;
+    }
+
+    .pkg-line {
+      padding: 0.15rem 0;
+    }
+
+    .pkg-key { color: var(--cyan); }
+    .pkg-str { color: var(--green); }
+    .pkg-bracket { color: var(--muted); }
+    .pkg-comment { color: #484f58; font-style: italic; }
+
+    /* Blog — like git log */
+    .git-log-item {
+      padding: 1rem;
+      border-left: 2px solid var(--border);
+      margin-left: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .git-log-item:hover {
+      border-left-color: var(--green);
+      background: rgba(48,54,61,0.2);
+    }
+
+    .git-hash { color: var(--yellow); font-size: 0.8rem; }
+
+    .git-msg {
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0.25rem 0;
+    }
+
+    .git-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Project card */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .project-card:hover { border-color: var(--green); }
+
+    .project-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .project-card p {
+      font-family: 'Inter', sans-serif;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .project-card .link {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--green);
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .about-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .about-block h4 {
+      font-size: 0.8rem;
+      color: var(--green);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .about-block p, .about-block a {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .footer span { color: var(--green); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .header-inner { padding: 0 1rem; }
+      .main { padding: 2rem 1rem; }
+      .tab { padding: 0.5rem 0.7rem; font-size: 0.75rem; }
+      .ls-table { font-size: 0.78rem; }
+      .about-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="tab-dots">
+        <span class="tab-dot red"></span>
+        <span class="tab-dot yellow"></span>
+        <span class="tab-dot green"></span>
+      </div>
+      <a href="#career" class="tab active">career</a>
+      <a href="#stack" class="tab">stack</a>
+      <a href="#projects" class="tab">projects</a>
+      <a href="#blog" class="tab">blog</a>
+      <a href="#about" class="tab">about</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="prompt-line">
+        <span class="prompt">yoojung@samsung</span>
+        <span class="prompt-path">~/portfolio</span>
+        <span class="prompt-cmd">$ whoami</span>
+      </div>
+      <div class="hero-output">
+        <h1>
+          <span class="green">Data Observability</span> &amp;<br>
+          <span class="cyan">DevOps</span> Engineer<span class="cursor-blink"></span>
+        </h1>
+        <p>Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge"><span class="dot online"></span> Samsung Electronics (2018~)</span>
+        <span class="badge">Kubestronaut</span>
+        <span class="badge">gjenfwo@gmail.com</span>
+      </div>
+    </section>
+
+    <!-- Career — ls -la style -->
+    <section id="career" class="section">
+      <div class="section-prompt">
+        <span class="prompt">$</span>
+        <span class="prompt-cmd">ls -la ./career/</span>
+      </div>
+      <table class="ls-table">
+        <thead>
+          <tr><th>Period</th><th>Role</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ls-period">2025.08–now</td>
+            <td>
+              <span class="ls-role">DataOps Engineer</span><br>
+              <span class="ls-company">Data Observability Platform</span>
+            </td>
+            <td>
+              <div class="ls-desc">
+                45,000개 테이블 ETL 파이프라인 가시화 아키텍처 설계<br>
+                Kafka → Data Prepper → OpenSearch 실시간 알림<br>
+                CDC 파이프라인 안정화 및 운영 자동화
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="ls-period">2023.07–25.07</td>
+            <td>
+              <span class="ls-role">DevOps Platform Lead</span><br>
+              <span class="ls-company">Observability</span>
+            </td>
+            <td>
+              <div class="ls-desc">
+                On-prem K8s PaaS, Metric/Trace/Log 통합 모니터링<br>
+                Prometheus 25대 (6,200서버, 5,800앱) 샤딩 설계<br>
+                EFK 로그 파이프라인 및 ILM 자동화
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="ls-period">2021.03–23.06</td>
+            <td>
+              <span class="ls-role">Backend Engineer</span><br>
+              <span class="ls-company">Semiconductor Quality</span>
+            </td>
+            <td>
+              <div class="ls-desc">
+                300GB/일 수율 배치 서버 및 Report 백엔드 개발<br>
+                Django/Python/Oracle 지표 분석 대시보드 리드
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Stack — package.json style -->
+    <section id="stack" class="section">
+      <div class="section-prompt">
+        <span class="prompt">$</span>
+        <span class="prompt-cmd">cat stack.json</span>
+      </div>
+      <div class="pkg-block">
+        <div class="pkg-line"><span class="pkg-bracket">{</span></div>
+        <div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"platform"</span>: [<span class="pkg-str">"Kubernetes"</span>, <span class="pkg-str">"Helm"</span>, <span class="pkg-str">"OpenTelemetry"</span>],</div>
+        <div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"observability"</span>: [<span class="pkg-str">"Prometheus"</span>, <span class="pkg-str">"Grafana"</span>, <span class="pkg-str">"OpenSearch"</span>, <span class="pkg-str">"Elasticsearch"</span>],</div>
+        <div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"streaming"</span>: [<span class="pkg-str">"Kafka"</span>],</div>
+        <div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"backend"</span>: [<span class="pkg-str">"Python"</span>, <span class="pkg-str">"Django"</span>, <span class="pkg-str">"Oracle"</span>],</div>
+        <div class="pkg-line">&nbsp;&nbsp;<span class="pkg-key">"certifications"</span>: [<span class="pkg-str">"CKA"</span>, <span class="pkg-str">"CKAD"</span>, <span class="pkg-str">"CKS"</span>, <span class="pkg-str">"KCNA"</span>, <span class="pkg-str">"KCSA"</span>, <span class="pkg-str">"SQLD"</span>]</div>
+        <div class="pkg-line"><span class="pkg-bracket">}</span></div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section">
+      <div class="section-prompt">
+        <span class="prompt">$</span>
+        <span class="prompt-cmd">kubectl get projects</span>
+      </div>
+      <div class="project-card">
+        <h3>Cloud-Native Ticketing Platform (30,000 RPS)</h3>
+        <p>GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증</p>
+        <a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" class="link">
+          github.com/traffic-tacos →
+        </a>
+      </div>
+    </section>
+
+    <!-- Blog — git log style -->
+    <section id="blog" class="section">
+      <div class="section-prompt">
+        <span class="prompt">$</span>
+        <span class="prompt-cmd">git log --oneline ./blog/</span>
+      </div>
+      <div class="git-log-item">
+        <span class="git-hash">a3f1c2d</span>
+        <p class="git-msg">Data Observability Architecture for Large-Scale ETL</p>
+        <p class="git-meta">ETL 장애 탐지 시간을 줄이기 위한 실행 상태 판별 로직과 OpenSearch Trace 시각화</p>
+      </div>
+      <div class="git-log-item">
+        <span class="git-hash">e7b4a9f</span>
+        <p class="git-msg">Prometheus Sharding Strategy in On-Prem Clusters</p>
+        <p class="git-meta">기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 경험</p>
+      </div>
+      <div class="git-log-item">
+        <span class="git-hash">1d8f3e0</span>
+        <p class="git-msg">What I Learned from 30K RPS Ticketing Load Tests</p>
+        <p class="git-meta">k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증</p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section">
+      <div class="section-prompt">
+        <span class="prompt">$</span>
+        <span class="prompt-cmd">cat ./about.yml</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-block">
+          <h4>Contact</h4>
+          <p><a href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></p>
+          <p><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
+        </div>
+        <div class="about-block">
+          <h4>Education</h4>
+          <p>성균관대학교<br>화학공학 / 컴퓨터공학 (복수전공)</p>
+        </div>
+        <div class="about-block">
+          <h4>Language</h4>
+          <p>Korean (Native)<br>English (Professional) · OPIC AL</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>$</span> echo "© 2025 허유정 · Built for GitHub Pages"
+  </footer>
+</body>
+</html>

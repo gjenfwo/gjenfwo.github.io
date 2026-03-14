@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept C — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #16161d;
+      --card: #1c1c26;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --muted: #7a7a8e;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.15);
+      --blue: #3b82f6;
+      --blue-dim: rgba(59,130,246,0.15);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245,158,11,0.15);
+      --purple: #a855f7;
+      --purple-dim: rgba(168,85,247,0.15);
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* Header — Dashboard nav */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,15,19,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 0.95rem;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(34,197,94,0.5);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+      50% { box-shadow: 0 0 16px rgba(34,197,94,0.8); }
+    }
+
+    .nav { display: flex; gap: 2px; }
+
+    .nav a {
+      padding: 0.4rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+
+    .nav a:hover { color: var(--text); background: var(--card); }
+
+    /* Main */
+    .main {
+      max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;
+    }
+
+    /* Hero — Status panel */
+    .hero-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--purple));
+    }
+
+    .hero-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+
+    .hero-panel h1 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-panel h1 .green { color: var(--green); }
+    .hero-panel h1 .blue { color: var(--blue); }
+
+    .hero-panel .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 500px;
+    }
+
+    .status-badges {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      align-items: flex-end;
+    }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0.35rem 0.8rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-family: var(--mono);
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+
+    .status-dot.green { background: var(--green); }
+    .status-dot.blue { background: var(--blue); }
+    .status-dot.amber { background: var(--amber); }
+
+    /* Metric cards row */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .metric-card:hover { border-color: var(--muted); }
+
+    .metric-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      line-height: 1;
+    }
+
+    .metric-value.green { color: var(--green); }
+    .metric-value.blue { color: var(--blue); }
+    .metric-value.amber { color: var(--amber); }
+    .metric-value.purple { color: var(--purple); }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    /* Section */
+    .section { margin-bottom: 2rem; }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Two-column layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Career timeline — like log stream */
+    .timeline-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .timeline-card-header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .timeline-entry {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(42,42,58,0.5);
+      transition: background 0.15s;
+    }
+
+    .timeline-entry:last-child { border-bottom: none; }
+    .timeline-entry:hover { background: rgba(42,42,58,0.3); }
+
+    .timeline-entry h3 {
+      font-size: 0.9rem; font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .timeline-meta {
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      color: var(--amber);
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-entry ul {
+      padding-left: 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .timeline-entry li { margin-bottom: 0.15rem; }
+
+    /* Stack panel */
+    .stack-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .stack-panel h3 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .stack-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .stack-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.4rem 0.6rem;
+      background: var(--card);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: var(--mono);
+    }
+
+    .stack-bar {
+      height: 4px; border-radius: 2px;
+      margin-top: 0.35rem;
+    }
+
+    .stack-bar.green { background: var(--green); width: 90%; }
+    .stack-bar.blue { background: var(--blue); width: 85%; }
+    .stack-bar.purple { background: var(--purple); width: 75%; }
+    .stack-bar.amber { background: var(--amber); width: 70%; }
+
+    /* Blog — Log entries */
+    .log-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .log-entry {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(42,42,58,0.5);
+      transition: background 0.15s;
+      display: block;
+    }
+
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry:hover { background: rgba(42,42,58,0.3); }
+
+    .log-level {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 0.3rem;
+    }
+
+    .log-level.info { background: var(--blue-dim); color: var(--blue); }
+    .log-level.warn { background: var(--amber-dim); color: var(--amber); }
+    .log-level.debug { background: var(--green-dim); color: var(--green); }
+
+    .log-entry h4 { font-size: 0.9rem; margin-bottom: 0.2rem; }
+    .log-entry p { font-size: 0.8rem; color: var(--muted); }
+
+    /* Project card */
+    .project-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .project-panel:hover { border-color: var(--green); }
+
+    .project-panel h3 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+
+    .project-panel p {
+      font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .project-link {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--green);
+    }
+
+    .project-link:hover { text-decoration: underline; }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .about-card h4 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .about-card p { font-size: 0.85rem; color: var(--muted); }
+    .about-card a { color: var(--blue); }
+    .about-card a:hover { text-decoration: underline; }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+      padding: 1.25rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .hero-panel { padding: 1.5rem; }
+      .status-badges { align-items: flex-start; }
+      .nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span>yoojung.dashboard</span>
+      </div>
+      <nav class="nav">
+        <a href="#career">Career</a>
+        <a href="#projects">Projects</a>
+        <a href="#blog">Blog</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero -->
+    <section class="hero-panel">
+      <div class="hero-top">
+        <div>
+          <h1>
+            <span class="green">Data Observability</span> &amp;<br>
+            <span class="blue">DevOps</span> Engineer
+          </h1>
+          <p class="subtitle">Data Observability, DevOps, Platform Engineering을 중심으로 대규모 운영 환경을 설계하고 개선하는 엔지니어입니다.</p>
+        </div>
+        <div class="status-badges">
+          <span class="status-badge"><span class="status-dot green"></span> ACTIVE — Samsung Electronics</span>
+          <span class="status-badge"><span class="status-dot blue"></span> Kubestronaut Certified</span>
+          <span class="status-badge"><span class="status-dot amber"></span> Since 2018</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics row -->
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">Experience</div>
+        <div class="metric-value green">7+</div>
+        <div class="metric-sub">years at Samsung</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">K8s Certs</div>
+        <div class="metric-value blue">5</div>
+        <div class="metric-sub">CKA CKAD CKS KCNA KCSA</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Scale</div>
+        <div class="metric-value amber">45K</div>
+        <div class="metric-sub">tables monitored</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Servers</div>
+        <div class="metric-value purple">6.2K</div>
+        <div class="metric-sub">Prometheus targets</div>
+      </div>
+    </div>
+
+    <!-- Career + Stack -->
+    <div class="grid-2" id="career">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Career Timeline</span>
+        </div>
+        <div class="timeline-card">
+          <div class="timeline-card-header">
+            <span style="color:var(--green);">&#9679;</span> Live feed — Samsung Electronics
+          </div>
+          <div class="timeline-entry">
+            <h3>Data Observability Platform · DataOps Engineer</h3>
+            <div class="timeline-meta">2025.08 – Present</div>
+            <ul>
+              <li>45,000개 테이블 ETL 파이프라인 상태/품질 가시화</li>
+              <li>Kafka → Data Prepper → OpenSearch 실시간 알림</li>
+              <li>CDC 파이프라인 안정화 및 운영 자동화</li>
+            </ul>
+          </div>
+          <div class="timeline-entry">
+            <h3>DevOps Platform Lead · Observability</h3>
+            <div class="timeline-meta">2023.07 – 2025.07</div>
+            <ul>
+              <li>On-prem K8s PaaS, Metric/Trace/Log 통합 모니터링</li>
+              <li>Prometheus 25대, Helm 자동화 및 샤딩 설계</li>
+              <li>EFK 로그 파이프라인 및 ILM 자동화</li>
+            </ul>
+          </div>
+          <div class="timeline-entry">
+            <h3>Backend Engineer · Semiconductor Quality</h3>
+            <div class="timeline-meta">2021.03 – 2023.06</div>
+            <ul>
+              <li>300GB/일 수율 배치 서버 및 Report 백엔드</li>
+              <li>Django/Python/Oracle 지표 분석 대시보드 리드</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Tech Stack</span>
+        </div>
+        <div class="stack-panel">
+          <h3>Platform &amp; Infra</h3>
+          <div class="stack-list">
+            <div class="stack-item"><span>Kubernetes</span><span style="color:var(--green);">&#9679;</span></div>
+            <div class="stack-item"><span>OpenTelemetry</span><span style="color:var(--green);">&#9679;</span></div>
+            <div class="stack-item"><span>Prometheus</span><span style="color:var(--green);">&#9679;</span></div>
+            <div class="stack-item"><span>Grafana</span><span style="color:var(--blue);">&#9679;</span></div>
+            <div class="stack-item"><span>Kafka</span><span style="color:var(--blue);">&#9679;</span></div>
+            <div class="stack-item"><span>OpenSearch</span><span style="color:var(--blue);">&#9679;</span></div>
+            <div class="stack-item"><span>Elasticsearch</span><span style="color:var(--purple);">&#9679;</span></div>
+            <div class="stack-item"><span>Helm</span><span style="color:var(--purple);">&#9679;</span></div>
+            <div class="stack-item"><span>Python</span><span style="color:var(--amber);">&#9679;</span></div>
+            <div class="stack-item"><span>Django</span><span style="color:var(--amber);">&#9679;</span></div>
+            <div class="stack-item"><span>Oracle</span><span style="color:var(--amber);">&#9679;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <section id="projects" class="section">
+      <div class="section-header">
+        <span class="section-title">Projects</span>
+      </div>
+      <div class="project-panel">
+        <h3>Cloud-Native Ticketing Platform (30,000 RPS)</h3>
+        <p>GitHub Actions + ArgoCD CI/CD, k6 부하 테스트, FinOps 관점의 확장성 검증</p>
+        <a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer" class="project-link">
+          github.com/traffic-tacos →
+        </a>
+      </div>
+    </section>
+
+    <!-- Blog — Logs -->
+    <section id="blog" class="section">
+      <div class="section-header">
+        <span class="section-title">Blog — Log Stream</span>
+      </div>
+      <div class="log-card">
+        <div class="log-entry">
+          <span class="log-level info">INFO</span>
+          <h4>Data Observability Architecture for Large-Scale ETL</h4>
+          <p>ETL 장애 탐지 시간을 줄이기 위한 실행 상태 판별 로직과 OpenSearch Trace 시각화</p>
+        </div>
+        <div class="log-entry">
+          <span class="log-level debug">DEBUG</span>
+          <h4>Prometheus Sharding Strategy in On-Prem Clusters</h4>
+          <p>기준정보 라벨링으로 수집 대상을 분산하고 운영 복잡도를 낮춘 경험</p>
+        </div>
+        <div class="log-entry">
+          <span class="log-level warn">PERF</span>
+          <h4>What I Learned from 30K RPS Ticketing Load Tests</h4>
+          <p>k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section">
+      <div class="section-header">
+        <span class="section-title">About</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <h4>Contact</h4>
+          <p><a href="mailto:gjenfwo@gmail.com">gjenfwo@gmail.com</a></p>
+          <p style="margin-top:0.3rem;"><a href="https://github.com/traffic-tacos" target="_blank" rel="noopener noreferrer">github.com/traffic-tacos</a></p>
+        </div>
+        <div class="about-card">
+          <h4>Education</h4>
+          <p>성균관대학교<br>화학공학 / 컴퓨터공학 (복수전공)</p>
+        </div>
+        <div class="about-card">
+          <h4>Language</h4>
+          <p>Korean (Native)<br>English (Professional) · OPIC AL</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    &copy; 2025 허유정 · Built for GitHub Pages
+  </footer>
+
+</body>
+</html>
