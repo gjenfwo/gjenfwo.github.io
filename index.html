@@ -735,24 +735,6 @@
         }
       }
 
-      // Mobile menu
-      document.getElementById('mob-btn').addEventListener('click', function() {
-        document.getElementById('mob-nav').classList.toggle('open');
-      });
-      document.querySelectorAll('#mob-nav a').forEach(function(a) {
-        a.addEventListener('click', function() {
-          document.getElementById('mob-nav').classList.remove('open');
-        });
-      });
-
-      // Sidebar active state
-      document.querySelectorAll('.sidebar-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          document.querySelectorAll('.sidebar-item').forEach(function(i) { i.classList.remove('active'); });
-          this.classList.add('active');
-        });
-      });
-
       // Language toggle buttons
       function onToggleLang() {
         setLang(currentLang === 'ko' ? 'en' : 'ko');
