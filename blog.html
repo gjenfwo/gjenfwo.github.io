@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="허유정 Blog Portfolio">
+  <title>허유정 | Posts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style-dashboard.css?v=5">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="mobile-header">
+      <div class="mobile-logo"><span class="mobile-logo-dot"></span> yoojung.dashboard</div>
+      <div class="mobile-header-controls">
+        <button type="button" class="control-btn" id="lang-toggle-mobile">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle-mobile">Light</button>
+      </div>
+    </div>
+
+    <div class="topbar">
+      <nav class="breadcrumb" aria-label="Section navigation">
+        <a href="index.html" class="top-tab" id="nav-overview">Overview</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="career.html" class="top-tab" id="nav-career">Career</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="projects.html" class="top-tab" id="nav-projects">Projects</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="blog.html" class="top-tab current" id="nav-blog">Blog</a>
+      </nav>
+      <div class="topbar-controls">
+        <div class="time-range"><span class="icon">&#9200;</span><span id="time-range-text">2018 - Present</span></div>
+        <button type="button" class="control-btn" id="lang-toggle">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle">Light</button>
+      </div>
+    </div>
+
+    <main class="main">
+      <div class="grid-row fade-in" id="blog">
+        <div class="row-title"><span class="chevron">&#9660;</span> <span id="panel-blog-logs">Posts - Log Stream</span></div>
+        <div class="panel">
+          <div class="panel-body panel-body-tight" id="blog-log-list"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="./portfolio-data.js?v=11"></script>
+  <script>
+    (function() {
+      var data = window.PORTFOLIO_DATA || {}
+      var currentLang = localStorage.getItem('portfolio.lang') || (data.i18n && data.i18n.defaultLang) || 'ko'
+      var currentTheme = localStorage.getItem('portfolio.theme') || 'dark'
+
+      var fallbackUi = {
+        ko: { navOverview: 'Overview', navCareer: 'Career', navProjects: 'Projects', navBlog: 'Posts', timeRange: '2018 - 현재', topLangButton: 'EN', topThemeDark: 'Dark', topThemeLight: 'Light', panelBlogLogs: 'Posts - Log Stream' },
+        en: { navOverview: 'Overview', navCareer: 'Career', navProjects: 'Projects', navBlog: 'Posts', timeRange: '2018 - Present', topLangButton: 'KO', topThemeDark: 'Dark', topThemeLight: 'Light', panelBlogLogs: 'Posts - Log Stream' }
+      }
+
+      function t(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) return value[currentLang] || value.ko || value.en || ''
+        return value || ''
+      }
+
+      function ui(key) {
+        var table = (data.i18n && data.i18n.ui && data.i18n.ui[currentLang]) || fallbackUi[currentLang] || fallbackUi.ko
+        return table[key] || key
+      }
+
+      function applyTheme(theme) {
+        currentTheme = theme
+        document.body.setAttribute('data-theme', theme)
+        localStorage.setItem('portfolio.theme', theme)
+        var label = theme === 'dark' ? ui('topThemeLight') : ui('topThemeDark')
+        document.getElementById('theme-toggle').textContent = label
+        document.getElementById('theme-toggle-mobile').textContent = label
+      }
+
+      function updateLangButtons() {
+        var nextLangLabel = ui('topLangButton')
+        document.getElementById('lang-toggle').textContent = nextLangLabel
+        document.getElementById('lang-toggle-mobile').textContent = nextLangLabel
+      }
+
+      function renderBlog() {
+        document.getElementById('nav-overview').textContent = ui('navOverview')
+        document.getElementById('nav-career').textContent = ui('navCareer')
+        document.getElementById('nav-projects').textContent = ui('navProjects')
+        document.getElementById('nav-blog').textContent = ui('navBlog')
+        document.getElementById('time-range-text').textContent = ui('timeRange')
+        document.getElementById('panel-blog-logs').textContent = ui('panelBlogLogs')
+
+        document.getElementById('blog-log-list').innerHTML = (data.blog || []).map(function(item) {
+          var levelClass = item.level === 'INFO' ? 'info' : (item.level === 'DEBUG' ? 'debug' : 'warn')
+          return '<div class="log-entry">' +
+            '<span class="log-level ' + levelClass + '">' + item.level + '</span>' +
+            '<div class="log-content"><div class="log-msg">' + item.title + '</div><div class="log-detail">' + t(item.detail) + '</div></div>' +
+            '<span class="log-time">' + item.time + '</span>' +
+          '</div>'
+        }).join('')
+
+        updateLangButtons()
+        applyTheme(currentTheme)
+      }
+
+      function onToggleLang() {
+        currentLang = currentLang === 'ko' ? 'en' : 'ko'
+        localStorage.setItem('portfolio.lang', currentLang)
+        renderBlog()
+      }
+
+      function onToggleTheme() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark')
+      }
+
+      document.getElementById('lang-toggle').addEventListener('click', onToggleLang)
+      document.getElementById('lang-toggle-mobile').addEventListener('click', onToggleLang)
+      document.getElementById('theme-toggle').addEventListener('click', onToggleTheme)
+      document.getElementById('theme-toggle-mobile').addEventListener('click', onToggleTheme)
+
+      document.addEventListener('DOMContentLoaded', function() {
+        renderBlog()
+        document.querySelectorAll('.fade-in').forEach(function(el) {
+          el.classList.add('visible')
+        })
+      })
+    })()
+  </script>
+</body>
+</html>

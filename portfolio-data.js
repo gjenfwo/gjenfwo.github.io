@@ -14,7 +14,7 @@ window.PORTFOLIO_DATA = {
         navCareer: "Career",
         navTech: "Tech Stack",
         navProjects: "Projects",
-        navBlog: "Blog",
+        navBlog: "Posts",
         navAbout: "About",
         rowMetrics: "Key Metrics",
         rowCareerStack: "Career & Stack",
@@ -24,7 +24,7 @@ window.PORTFOLIO_DATA = {
         panelCareerTimeline: "Career Timeline",
         panelTechStack: "Tech Stack",
         panelProjects: "Projects",
-        panelBlogLogs: "Blog - Log Stream",
+        panelBlogLogs: "Posts - Log Stream",
         panelEducation: "Education",
         panelCertificate: "Certificate",
         panelLanguage: "Language",
@@ -48,6 +48,7 @@ window.PORTFOLIO_DATA = {
         stackObservability: "Observability",
         stackStreaming: "Streaming",
         stackBackend: "Backend",
+        stackDatabase: "Database",
         stackCerts: "Certifications",
         publishingPlan: "Publishing Plan",
         aboutEmail: "Email",
@@ -69,7 +70,7 @@ window.PORTFOLIO_DATA = {
         navCareer: "Career",
         navTech: "Tech Stack",
         navProjects: "Projects",
-        navBlog: "Blog",
+        navBlog: "Posts",
         navAbout: "About",
         rowMetrics: "Key Metrics",
         rowCareerStack: "Career & Stack",
@@ -79,7 +80,7 @@ window.PORTFOLIO_DATA = {
         panelCareerTimeline: "Career Timeline",
         panelTechStack: "Tech Stack",
         panelProjects: "Projects",
-        panelBlogLogs: "Blog - Log Stream",
+        panelBlogLogs: "Posts - Log Stream",
         panelEducation: "Education",
         panelCertificate: "Certificate",
         panelLanguage: "Language",
@@ -103,6 +104,7 @@ window.PORTFOLIO_DATA = {
         stackObservability: "Observability",
         stackStreaming: "Streaming",
         stackBackend: "Backend",
+        stackDatabase: "Database",
         stackCerts: "Certifications",
         publishingPlan: "Publishing Plan",
         aboutEmail: "Email",
@@ -143,6 +145,9 @@ window.PORTFOLIO_DATA = {
       period: "2025.08-now",
       status: { ko: "Running", en: "Running" },
       role: "DataOps Engineer",
+      companies: [
+        { ko: "Samsung Electronics", en: "Samsung Electronics" }
+      ],
       team: {
         ko: "AI센터 - Platform Engineering그룹",
         en: "AI Center - Platform Engineering Group"
@@ -182,6 +187,9 @@ window.PORTFOLIO_DATA = {
       period: "2023.07-2025.07",
       status: { ko: "Done", en: "Done" },
       role: "DevOps Engineer",
+      companies: [
+        { ko: "Samsung Electronics", en: "Samsung Electronics" }
+      ],
       team: {
         ko: "AI센터 - Data Platform그룹",
         en: "AI Center - Data Platform Group"
@@ -221,6 +229,9 @@ window.PORTFOLIO_DATA = {
       period: "2021.03-2023.06",
       status: { ko: "Done", en: "Done" },
       role: "Backend Engineer",
+      companies: [
+        { ko: "Samsung Electronics", en: "Samsung Electronics" }
+      ],
       team: {
         ko: "Flash개발실 - Product Engineering팀",
         en: "Flash Memory - Product Engineering Team"
@@ -322,6 +333,26 @@ window.PORTFOLIO_DATA = {
       }
     },
     {
+      hash: "c91d2aa",
+      level: "INFO",
+      time: "2026",
+      title: "Building an Internal Developer Platform with Backstage",
+      detail: {
+        ko: "템플릿 기반 서비스 생성, 표준 CI 파이프라인, 운영 가이드를 하나의 IDP 경험으로 통합한 설계 메모",
+        en: "Design notes on unifying scaffold templates, standard CI pipelines, and runbooks into one IDP experience"
+      }
+    },
+    {
+      hash: "90be118",
+      level: "DEBUG",
+      time: "2026",
+      title: "Golden Path: From Local Dev to Production in 15 Minutes",
+      detail: {
+        ko: "개발자가 로컬 개발에서 배포까지 빠르게 이동할 수 있도록 Golden Path를 설계한 과정과 체크리스트",
+        en: "How I designed a golden path and checklist so developers can move from local dev to production quickly"
+      }
+    },
+    {
       hash: "e7b4a9f",
       level: "DEBUG",
       time: "2025",
@@ -339,6 +370,36 @@ window.PORTFOLIO_DATA = {
       detail: {
         ko: "k6 부하 테스트로 병목을 찾고 GitOps 배포 안정성 검증",
         en: "Finding bottlenecks with k6 load tests and validating GitOps deployment stability"
+      }
+    },
+    {
+      hash: "5ae73f1",
+      level: "PERF",
+      time: "2024",
+      title: "Reducing Mean Time To Recovery with SLO-Driven Alerts",
+      detail: {
+        ko: "SLO 기반 알림 우선순위 조정으로 야간 장애 대응 소음을 줄이고 MTTR을 낮춘 운영 개선 사례",
+        en: "An ops improvement case where SLO-driven alert priorities reduced noise and improved MTTR"
+      }
+    },
+    {
+      hash: "af81e32",
+      level: "INFO",
+      time: "2023",
+      title: "Why I Prefer GitOps for Platform Changes",
+      detail: {
+        ko: "변경 이력 가시성, 롤백 단순화, 리뷰 흐름 일원화 관점에서 GitOps를 선택한 이유",
+        en: "Why I chose GitOps for visibility, simpler rollback, and a unified review workflow"
+      }
+    },
+    {
+      hash: "4d66b27",
+      level: "DEBUG",
+      time: "2023",
+      title: "Practical Kubernetes Cost Guardrails for Dev Teams",
+      detail: {
+        ko: "팀 자율성을 해치지 않으면서 네임스페이스 단위 리소스 가드레일을 운영한 실제 방법",
+        en: "A practical way to run namespace-level Kubernetes guardrails without hurting developer autonomy"
       }
     }
   ],

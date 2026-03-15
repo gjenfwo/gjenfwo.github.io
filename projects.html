@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="허유정 Projects Portfolio">
+  <title>허유정 | Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style-dashboard.css?v=5">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="mobile-header">
+      <div class="mobile-logo"><span class="mobile-logo-dot"></span> yoojung.dashboard</div>
+      <div class="mobile-header-controls">
+        <button type="button" class="control-btn" id="lang-toggle-mobile">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle-mobile">Light</button>
+      </div>
+    </div>
+
+    <div class="topbar">
+      <nav class="breadcrumb" aria-label="Section navigation">
+        <a href="index.html" class="top-tab" id="nav-overview">Overview</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="career.html" class="top-tab" id="nav-career">Career</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="projects.html" class="top-tab current" id="nav-projects">Projects</a>
+        <span class="breadcrumb-sep">|</span>
+        <a href="blog.html" class="top-tab" id="nav-blog">Blog</a>
+      </nav>
+      <div class="topbar-controls">
+        <div class="time-range"><span class="icon">&#9200;</span><span id="time-range-text">2018 - Present</span></div>
+        <button type="button" class="control-btn" id="lang-toggle">EN</button>
+        <button type="button" class="control-btn" id="theme-toggle">Light</button>
+      </div>
+    </div>
+
+    <main class="main">
+      <div class="grid-row fade-in" id="projects">
+        <div class="row-title" id="row-projects"><span class="chevron">&#9660;</span> Projects</div>
+        <div class="grid-2-1">
+          <div class="panel table-panel">
+            <div class="panel-header"><span class="panel-title" id="panel-projects">Projects</span></div>
+            <div class="panel-body panel-body-tight">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="col-project-period">Period</th>
+                    <th class="col-project-status">Status</th>
+                    <th class="col-project-title">Project</th>
+                    <th>Summary</th>
+                  </tr>
+                </thead>
+                <tbody id="project-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" id="project-detail-panel">
+            <div class="panel-header"><span class="panel-title" id="project-detail-title">Project Detail</span></div>
+            <div class="panel-body">
+              <div class="project-body project-list" id="project-body"></div>
+              <div class="publishing-block">
+                <div class="stack-cat-label" id="publishing-label">Publishing Plan</div>
+                <ul id="publishing-list" class="publishing-list"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="./portfolio-data.js?v=11"></script>
+  <script>
+    (function() {
+      var data = window.PORTFOLIO_DATA || {}
+      var currentLang = localStorage.getItem('portfolio.lang') || (data.i18n && data.i18n.defaultLang) || 'ko'
+      var currentTheme = localStorage.getItem('portfolio.theme') || 'dark'
+
+      var fallbackUi = {
+        ko: { navOverview: 'Overview', navCareer: 'Career', navProjects: 'Projects', navBlog: 'Posts', timeRange: '2018 - 현재', topLangButton: 'EN', topThemeDark: 'Dark', topThemeLight: 'Light', tablePeriod: 'Period', tableStatus: 'Status', panelProjects: 'Projects', publishingPlan: 'Publishing Plan' },
+        en: { navOverview: 'Overview', navCareer: 'Career', navProjects: 'Projects', navBlog: 'Posts', timeRange: '2018 - Present', topLangButton: 'KO', topThemeDark: 'Dark', topThemeLight: 'Light', tablePeriod: 'Period', tableStatus: 'Status', panelProjects: 'Projects', publishingPlan: 'Publishing Plan' }
+      }
+
+      function t(value) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) return value[currentLang] || value.ko || value.en || ''
+        return value || ''
+      }
+
+      function ui(key) {
+        var table = (data.i18n && data.i18n.ui && data.i18n.ui[currentLang]) || fallbackUi[currentLang] || fallbackUi.ko
+        return table[key] || key
+      }
+
+      function applyTheme(theme) {
+        currentTheme = theme
+        document.body.setAttribute('data-theme', theme)
+        localStorage.setItem('portfolio.theme', theme)
+        var label = theme === 'dark' ? ui('topThemeLight') : ui('topThemeDark')
+        document.getElementById('theme-toggle').textContent = label
+        document.getElementById('theme-toggle-mobile').textContent = label
+      }
+
+      function updateLangButtons() {
+        var nextLangLabel = ui('topLangButton')
+        document.getElementById('lang-toggle').textContent = nextLangLabel
+        document.getElementById('lang-toggle-mobile').textContent = nextLangLabel
+      }
+
+      function renderProjects() {
+        document.getElementById('nav-overview').textContent = ui('navOverview')
+        document.getElementById('nav-career').textContent = ui('navCareer')
+        document.getElementById('nav-projects').textContent = ui('navProjects')
+        document.getElementById('nav-blog').textContent = ui('navBlog')
+        document.getElementById('time-range-text').textContent = ui('timeRange')
+        document.getElementById('panel-projects').textContent = ui('panelProjects')
+        document.getElementById('publishing-label').textContent = ui('publishingPlan')
+
+        var projectItems = (Array.isArray(data.projects) && data.projects.length) ? data.projects : [data.project]
+        var projectHeaders = document.querySelectorAll('#projects .table-panel thead th')
+        if (projectHeaders.length === 4) {
+          projectHeaders[0].textContent = ui('tablePeriod')
+          projectHeaders[1].textContent = ui('tableStatus')
+          projectHeaders[2].textContent = ui('panelProjects')
+          projectHeaders[3].textContent = 'Summary'
+        }
+
+        document.getElementById('project-table-body').innerHTML = projectItems.map(function(p, idx) {
+          var pStatus = t(p.status || { ko: 'Done', en: 'Done' }).toLowerCase()
+          var pStatusClass = pStatus === 'running' ? 'running' : 'completed'
+          return '<tr class="is-clickable" data-project-index="' + idx + '">' +
+            '<td class="td-period">' + (p.period || '-') + '</td>' +
+            '<td><span class="td-status ' + pStatusClass + '"><span class="dot ' + (pStatus === 'running' ? 'dot-green' : 'dot-blue') + '"></span> ' + pStatus + '</span></td>' +
+            '<td><div class="td-role">' + p.title + '</div><div class="td-team">' + p.label + '</div></td>' +
+            '<td class="td-desc">' + t(p.description) + '</td>' +
+          '</tr>'
+        }).join('')
+
+        var projectBody = document.getElementById('project-body')
+        function renderProjectDetail(index) {
+          var p = projectItems[index]
+          if (!p || !projectBody) return
+          document.getElementById('project-detail-title').textContent = 'Project Detail - #' + String(index + 1)
+          projectBody.innerHTML = '<div class="project-item"><h3>' + p.title + '</h3><p>' + t(p.description) + '</p>' +
+            '<a href="' + p.url + '" target="_blank" rel="noopener noreferrer" class="project-link">' + p.label + '</a></div>'
+          document.querySelectorAll('#project-table-body tr').forEach(function(tr) { tr.classList.remove('is-active') })
+          var activeRow = document.querySelector('#project-table-body tr[data-project-index="' + index + '"]')
+          if (activeRow) activeRow.classList.add('is-active')
+        }
+
+        document.querySelectorAll('#project-table-body tr.is-clickable').forEach(function(row) {
+          row.addEventListener('click', function() {
+            renderProjectDetail(Number(this.getAttribute('data-project-index')))
+          })
+        })
+
+        renderProjectDetail(0)
+
+        document.getElementById('publishing-list').innerHTML = (data.publishingPlan || []).map(function(item) {
+          return '<li>' + t(item) + '</li>'
+        }).join('')
+
+        updateLangButtons()
+        applyTheme(currentTheme)
+      }
+
+      function onToggleLang() {
+        currentLang = currentLang === 'ko' ? 'en' : 'ko'
+        localStorage.setItem('portfolio.lang', currentLang)
+        renderProjects()
+      }
+
+      function onToggleTheme() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark')
+      }
+
+      document.getElementById('lang-toggle').addEventListener('click', onToggleLang)
+      document.getElementById('lang-toggle-mobile').addEventListener('click', onToggleLang)
+      document.getElementById('theme-toggle').addEventListener('click', onToggleTheme)
+      document.getElementById('theme-toggle-mobile').addEventListener('click', onToggleTheme)
+
+      document.addEventListener('DOMContentLoaded', function() {
+        renderProjects()
+        document.querySelectorAll('.fade-in').forEach(function(el) {
+          el.classList.add('visible')
+        })
+      })
+    })()
+  </script>
+</body>
+</html>
